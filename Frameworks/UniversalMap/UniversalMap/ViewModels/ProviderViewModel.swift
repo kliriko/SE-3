@@ -10,13 +10,14 @@ import MapKit
 import GoogleMaps
 
 class MapKitProvider: MapProviderProtocol {
-    func resetCameraPosition() -> MapCameraState {
-        let defaultRegion = MKCoordinateRegion(
-            center: CLLocationCoordinate2D(latitude: 50.450001, longitude: 30.523333),
-            span: MKCoordinateSpan(latitudeDelta: 0.03, longitudeDelta: 0.03)
-        )
-        return .mapkitRegion(defaultRegion)
-    }
+    func resetCameraPosition(userLocation: CLLocationCoordinate2D?) -> MapCameraState {
+            let center = userLocation ?? CLLocationCoordinate2D(latitude: 50.450001, longitude: 30.523333)
+            let defaultRegion = MKCoordinateRegion(
+                center: center,
+                span: MKCoordinateSpan(latitudeDelta: 0.03, longitudeDelta: 0.03)
+            )
+            return .mapkitRegion(defaultRegion)
+        }
     
     func performSearch(query: String,
                        cameraLatitude: Double,
@@ -70,11 +71,13 @@ class MapKitProvider: MapProviderProtocol {
 }
 
 class GMSProvider: MapProviderProtocol {
-    
-    func resetCameraPosition() -> MapCameraState {
-        let camera = GMSCameraPosition(latitude: 50.450001, longitude: 30.523333, zoom: 14)
-        return .gmsCamera(camera)
-    }
+    func resetCameraPosition(userLocation: CLLocationCoordinate2D?) -> MapCameraState {
+            let center = userLocation ?? CLLocationCoordinate2D(latitude: 50.450001, longitude: 30.523333)
+            let camera = GMSCameraPosition(latitude: center.latitude,
+                                           longitude: center.longitude,
+                                           zoom: 14)
+            return .gmsCamera(camera)
+        }
     
     func performSearch(query: String,
                        cameraLatitude: Double,

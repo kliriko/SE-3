@@ -63,14 +63,12 @@ enum MapCameraState {
 }
 
 protocol MapProviderProtocol {
+    func resetCameraPosition(userLocation: CLLocationCoordinate2D?) -> MapCameraState
     func performSearch(query: String,
                        cameraLatitude: Double,
                        cameraLongitude: Double,
                        completion: @escaping (Result<[Point], Error>) -> Void)
-    
     func getDirections(start: CLLocationCoordinate2D,
                        destination: CLLocationCoordinate2D,
                        completion: @escaping (Result<RouteRepresentation, Error>) -> Void)
-    
-    func resetCameraPosition() -> MapCameraState
 }

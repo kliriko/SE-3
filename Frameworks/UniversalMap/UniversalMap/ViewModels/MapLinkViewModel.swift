@@ -13,6 +13,7 @@ import GoogleMaps
 
 class MapLinkViewModel: ObservableObject {
     @Published var locationManager = CLLocationManager()
+    @Published var gmsMapView: GMSMapView?  // store map reference
     
     @Published var searchFieldText: String = ""
     @Published var selectedMapProvider: MapProvider = .mapkit
@@ -59,8 +60,31 @@ class MapLinkViewModel: ObservableObject {
     }
     
     func resetCameraPosition() {
-        cameraState = provider.resetCameraPosition()
+        let userLocation = locationManager.location?.coordinate
+        let lat = userLocation?.latitude ?? 50.450001
+        let lon = userLocation?.longitude ?? 30.523333
+
+        currentCameraLatitude = lat
+        currentCameraLongitude = lon
+
+        switch selectedMapProvider {
+        case .mapkit:
+            // For MapKit, update cameraState binding
+            let region = MKCoordinateRegion(
+                center: CLLocationCoordinate2D(latitude: lat, longitude: lon),
+                span: MKCoordinateSpan(latitudeDelta: 0.03, longitudeDelta: 0.03)
+            )
+            cameraState = .mapkitRegion(region)
+
+        case .gms:
+            // For Google Maps, animate the stored map view
+            if let map = gmsMapView {
+                let camera = GMSCameraPosition(latitude: lat, longitude: lon, zoom: map.camera.zoom)
+                map.animate(to: camera)
+            }
+        }
     }
+
     
     func performSearch(query: String) {
         provider.performSearch(query: query,
