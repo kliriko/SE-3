@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import MapKit
 
 enum MapProvider: String {
     case gms, mapkit
@@ -13,4 +14,14 @@ enum MapProvider: String {
 
 enum MapType: String {
     case standard, satelite, hybrid
+}
+
+struct Point: Identifiable, Equatable {
+    let id = UUID()
+    let name: String
+    let coordinate: CLLocationCoordinate2D
+    
+    static func == (lhs: Point, rhs: Point) -> Bool {
+        lhs.id == rhs.id
+    }
 }

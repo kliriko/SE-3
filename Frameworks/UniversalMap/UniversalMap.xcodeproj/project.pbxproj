@@ -6,6 +6,10 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		571987052E75B0D2007F77E9 /* GoogleMaps in Frameworks */ = {isa = PBXBuildFile; productRef = 571987042E75B0D2007F77E9 /* GoogleMaps */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		578E089C2E718C97006041D3 /* UniversalMap.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = UniversalMap.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -23,6 +27,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				571987052E75B0D2007F77E9 /* GoogleMaps in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -65,6 +70,7 @@
 			);
 			name = UniversalMap;
 			packageProductDependencies = (
+				571987042E75B0D2007F77E9 /* GoogleMaps */,
 			);
 			productName = UniversalMap;
 			productReference = 578E089C2E718C97006041D3 /* UniversalMap.app */;
@@ -94,6 +100,9 @@
 			);
 			mainGroup = 578E08932E718C97006041D3;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				571987032E75B0D2007F77E9 /* XCRemoteSwiftPackageReference "ios-maps-sdk" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 578E089D2E718C97006041D3 /* Products */;
 			projectDirPath = "";
@@ -324,6 +333,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		571987032E75B0D2007F77E9 /* XCRemoteSwiftPackageReference "ios-maps-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/googlemaps/ios-maps-sdk";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 10.3.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		571987042E75B0D2007F77E9 /* GoogleMaps */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 571987032E75B0D2007F77E9 /* XCRemoteSwiftPackageReference "ios-maps-sdk" */;
+			productName = GoogleMaps;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 578E08942E718C97006041D3 /* Project object */;
 }
