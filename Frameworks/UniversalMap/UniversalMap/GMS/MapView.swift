@@ -16,7 +16,6 @@
 import GoogleMaps
 import SwiftUI
 
-/// The wrapper for `GMSMapView` so it can be used in SwiftUI
 struct MapView: UIViewRepresentable {
 
   @Binding var markers: [GMSMarker]
@@ -28,7 +27,6 @@ struct MapView: UIViewRepresentable {
   private let defaultZoomLevel: Float = 10
 
   func makeUIView(context: Context) -> GMSMapView {
-    // Create a GMSMapView centered around the city of San Francisco, California
     let sanFrancisco = CLLocationCoordinate2D(latitude: 37.7576, longitude: -122.4194)
     gmsMapView.camera = GMSCameraPosition.camera(withTarget: sanFrancisco, zoom: defaultZoomLevel)
     gmsMapView.delegate = context.coordinator

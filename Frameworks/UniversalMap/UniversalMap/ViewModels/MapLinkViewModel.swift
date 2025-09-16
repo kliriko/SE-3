@@ -8,12 +8,11 @@
 import Foundation
 import SwiftUI
 import MapKit
-import CoreLocation
 import GoogleMaps
 
 class MapLinkViewModel: ObservableObject {
     @Published var locationManager = CLLocationManager()
-    @Published var gmsMapView: GMSMapView?  // store map reference
+    @Published var gmsMapView: GMSMapView?
     
     @Published var searchFieldText: String = ""
     @Published var selectedMapProvider: MapProvider = .mapkit
@@ -69,7 +68,6 @@ class MapLinkViewModel: ObservableObject {
 
         switch selectedMapProvider {
         case .mapkit:
-            // For MapKit, update cameraState binding
             let region = MKCoordinateRegion(
                 center: CLLocationCoordinate2D(latitude: lat, longitude: lon),
                 span: MKCoordinateSpan(latitudeDelta: 0.03, longitudeDelta: 0.03)
@@ -77,7 +75,6 @@ class MapLinkViewModel: ObservableObject {
             cameraState = .mapkitRegion(region)
 
         case .gms:
-            // For Google Maps, animate the stored map view
             if let map = gmsMapView {
                 let camera = GMSCameraPosition(latitude: lat, longitude: lon, zoom: map.camera.zoom)
                 map.animate(to: camera)

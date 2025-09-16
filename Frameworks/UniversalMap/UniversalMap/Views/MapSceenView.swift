@@ -36,7 +36,9 @@ struct ContentView: View {
                         }
                     
                     Button(action: {
-                        viewModel.resetCameraPosition()
+                        withAnimation{
+                            viewModel.resetCameraPosition()
+                        }
                     }) {
                         Image(systemName: "arrow.down.right.and.arrow.up.left.square")
                             .font(.system(size: 40))

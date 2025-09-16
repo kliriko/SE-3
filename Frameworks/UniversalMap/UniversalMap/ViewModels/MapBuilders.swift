@@ -10,7 +10,6 @@ import MapKit
 import GoogleMaps
 
 
-// MARK: - MapKit
 struct MapKitMapBuilder: View {
     @ObservedObject var viewModel: MapLinkViewModel
     @State private var cameraPosition: MapCameraPosition = .region(
@@ -55,7 +54,6 @@ struct MapKitMapBuilder: View {
     }
 }
 
-// MARK: - Google Maps
 struct GMSMapBuilder: UIViewRepresentable {
     @ObservedObject var viewModel: MapLinkViewModel
 
@@ -66,25 +64,18 @@ struct GMSMapBuilder: UIViewRepresentable {
         let mapView = GMSMapView.map(withFrame: .zero, camera: camera)
         mapView.delegate = context.coordinator
         mapView.isMyLocationEnabled = true
-        mapView.settings.myLocationButton = true
-        
-        // Store reference in ViewModel
         viewModel.gmsMapView = mapView
         
         return mapView
     }
-
-
 
     func makeCoordinator() -> Coordinator {
         Coordinator(viewModel: viewModel)
     }
 
     func updateUIView(_ mapView: GMSMapView, context: Context) {
-        // 1️⃣ Animate camera if cameraState changed
         switch viewModel.cameraState {
         case let .gmsCamera(camera):
-            // Animate only if different
             if mapView.camera.target.latitude != camera.target.latitude ||
                mapView.camera.target.longitude != camera.target.longitude ||
                mapView.camera.zoom != camera.zoom {
@@ -92,25 +83,21 @@ struct GMSMapBuilder: UIViewRepresentable {
             }
         default: break
         }
-
-        // 2️⃣ Update map type
+        
         switch viewModel.selectedMapType {
         case .standard: mapView.mapType = .normal
         case .satelite: mapView.mapType = .satellite
         case .hybrid: mapView.mapType = .hybrid
         }
 
-        // 3️⃣ Clear overlays before adding new ones
         mapView.clear()
 
-        // 4️⃣ Add markers
         for markerPoint in viewModel.markers {
             let marker = GMSMarker(position: markerPoint.coordinate)
             marker.title = markerPoint.name
             marker.map = mapView
         }
 
-        // 5️⃣ Draw route if exists
         if let route = viewModel.route {
             let path = GMSMutablePath()
             for coord in route.coordinates {
@@ -136,7 +123,6 @@ struct GMSMapBuilder: UIViewRepresentable {
             viewModel.currentCameraLongitude = position.target.longitude
         }
 
-        // New method to center camera directly
         func centerCamera() {
             guard let mapView = mapView else { return }
             let camera = GMSCameraPosition(
