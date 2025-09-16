@@ -11,7 +11,7 @@ struct SearchFieldWithDebounce: View {
     @State private var searchFieldText: String = ""
     @State private var debouncedTask: Task<Void, Never>?
     
-    @ObservedObject var viewModel: MapScreenViewModel
+    @ObservedObject var viewModel: MapLinkViewModel
     
     var body: some View {
         TextField("Search...", text: $searchFieldText)
@@ -20,7 +20,7 @@ struct SearchFieldWithDebounce: View {
 
                 debouncedTask = Task {
                     do {
-                        try await Task.sleep(nanoseconds: 500_000_000)
+                        try await Task.sleep(nanoseconds: 1_500_000_000)
                         
                         if !Task.isCancelled {
                             performSearch(query: newValue)
@@ -40,6 +40,6 @@ struct SearchFieldWithDebounce: View {
 }
 
 #Preview {
-    SearchFieldWithDebounce(viewModel: MapScreenViewModel())
+    SearchFieldWithDebounce(viewModel: MapLinkViewModel())
         .padding()
 }

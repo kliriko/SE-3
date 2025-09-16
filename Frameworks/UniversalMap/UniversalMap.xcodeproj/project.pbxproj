@@ -14,9 +14,22 @@
 		578E089C2E718C97006041D3 /* UniversalMap.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = UniversalMap.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		57395BC52E79962A0078AF9B /* Exceptions for "UniversalMap" folder in "UniversalMap" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 578E089B2E718C97006041D3 /* UniversalMap */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		578E089E2E718C97006041D3 /* UniversalMap */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				57395BC52E79962A0078AF9B /* Exceptions for "UniversalMap" folder in "UniversalMap" target */,
+			);
 			path = UniversalMap;
 			sourceTree = "<group>";
 		};
@@ -265,6 +278,8 @@
 				DEVELOPMENT_TEAM = BC84Z645BP;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = UniversalMap/Info.plist;
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "need to know the location to show the path";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -293,6 +308,8 @@
 				DEVELOPMENT_TEAM = BC84Z645BP;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = UniversalMap/Info.plist;
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "need to know the location to show the path";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
