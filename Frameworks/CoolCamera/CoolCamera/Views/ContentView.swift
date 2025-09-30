@@ -49,7 +49,6 @@ struct ContentView: View {
                     HStack {
                         Button(action: {
                             vm.showGalleryView = true
-                            // stop session in background
                             DispatchQueue.main.async {
                                 cameraManager.stopSession()
                             }
@@ -106,19 +105,8 @@ struct ContentView: View {
             .padding()
             .frame(width: 800, height: 600)
             .navigationTitle("Camera")
-            .toolbar {
-                ToolbarItem(placement: .navigation) {
-                    Button(action: {
-                        print("Leading button tapped")
-                    }) {
-                        Label("Settings", systemImage: "gear")
-                    }
-                }
-            }
         }
-    
 }
-            
 
 #Preview {
     ContentView()

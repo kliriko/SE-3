@@ -12,17 +12,18 @@ struct GalleryView: View {
     @ObservedObject var cameraVm: CameraViewModel
     @StateObject private var galleryVm: GalleryViewModel = GalleryViewModel()
     @EnvironmentObject private var cameraManager: CameraManager
-    
+    @State private var isShowingMedia: Bool = false
+
     init(_ vm: CameraViewModel) {
         cameraVm = vm
     }
-    
+
     private let columns = [
         GridItem(.flexible()),
         GridItem(.flexible()),
         GridItem(.flexible())
     ]
-    
+
     var body: some View {
         NavigationStack {
             ScrollView {
@@ -49,14 +50,20 @@ struct GalleryView: View {
                             }
                         }
                         .cornerRadius(8)
+                        .onTapGesture {
+                            galleryVm.selectedItem = item
+                            isShowingMedia = true
+                        }
                     }
                 }
                 .padding(8)
             }
+            .navigationDestination(isPresented: $isShowingMedia) {
+                FullScreenMediaView(galleryVm: galleryVm, items: galleryVm.items)
+            }
         }
         .onAppear {
             galleryVm.fetchGallery()
-            
         }
         .navigationTitle("Gallery")
         .toolbar {
@@ -70,21 +77,4 @@ struct GalleryView: View {
             }
         }
     }
-}
-
-extension URL {
-    var isImage: Bool {
-        let imageExtensions = ["png", "jpg", "jpeg", "heic"]
-        return imageExtensions.contains(pathExtension.lowercased())
-    }
-    
-    var isVideo: Bool {
-        let videoExtensions = ["mp4", "mov", "m4v"]
-        return videoExtensions.contains(pathExtension.lowercased())
-    }
-}
-
-#Preview {
-    GalleryView(CameraViewModel())
-        .environmentObject(CameraManager())
 }

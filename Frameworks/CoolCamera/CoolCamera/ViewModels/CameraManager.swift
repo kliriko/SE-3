@@ -125,7 +125,6 @@ class CameraManager: ObservableObject {
     
     func restartSession() {
         stopSessionAndTearDown()
-        // Wait a bit before restarting
         sessionQueue.asyncAfter(deadline: .now() + 0.5) {
             self.setupSession()
             self.startSession()
