@@ -13,37 +13,61 @@ enum RequestType: String {
 }
 
 final class AlamoSession {
-    static func request<T: Codable>(type: RequestType, API: String, query: String, method: HTTPMethod, parameters: [String: Any]? = nil) async throws -> T{
+    static func request<T: Codable>(
+        type: RequestType,
+        API: String,
+        query: String,
+        method: HTTPMethod,
+        parameters: [String: Any]? = nil
+    ) async -> T? {
         
         let combinedQuery = API + query
         guard let url = URL(string: combinedQuery) else {
-            throw URLError(.badURL)
+            print("❌ Invalid URL: \(combinedQuery)")
+            return nil
         }
         
-        switch type {
+        do {
+            switch type {
             case .alamofire:
-                let response = try await AF.request(combinedQuery, method: method, parameters: parameters, headers: ["X-RapidAPI-Host" : "spoonacular-recipe-food-nutrition-v1.p.rapidapi.com",                  "X-RapidAPI-Key" : Constants.RapidAPIKey])
-                    .serializingDecodable(T.self)
-                    .value
+                let response = try await AF.request(
+                    combinedQuery,
+                    method: method,
+                    parameters: parameters,
+                    headers: [
+                        "X-RapidAPI-Host": "spoonacular-recipe-food-nutrition-v1.p.rapidapi.com",
+                        "X-RapidAPI-Key": Constants.RapidAPIKey
+                    ]
+                )
+                .serializingDecodable(T.self)
+                .value
                 return response
-            
+                
             case .urlsession:
                 var request = URLRequest(url: url)
-
-                request.httpMethod = String(describing: method)
+                request.httpMethod = method.rawValue.uppercased()
                 request.setValue("spoonacular-recipe-food-nutrition-v1.p.rapidapi.com", forHTTPHeaderField: "X-RapidAPI-Host")
                 request.setValue(Constants.RapidAPIKey, forHTTPHeaderField: "X-RapidAPI-Key")
-            
-            
+                
                 if let parameters = parameters {
                     request.httpBody = try? JSONSerialization.data(withJSONObject: parameters, options: [])
                 }
-            
-            
-                let (data, response) = try await URLSession.shared.data(for: request)
-                let recipeResponse = try JSONDecoder().decode(T.self, from: data)
                 
-                return recipeResponse
+                let (data, _) = try await URLSession.shared.data(for: request)
+                let decoded = try JSONDecoder().decode(T.self, from: data)
+                return decoded
+            }
+            
+        } catch let error as DecodingError {
+            print("Decoding error: \(error)")
+        } catch let error as URLError {
+            print("Network error: \(error)")
+        } catch let error as AFError {
+            print("Alamofire error: \(error)")
+        } catch {
+            print("Unknown error: \(error)")
         }
+        
+        return nil
     }
 }

@@ -9,7 +9,7 @@ import SwiftUI
 import Alamofire
 
 struct RecipeSearchView: View {
-    @StateObject var viewModel: RecipeViewModel = RecipeViewModel()
+    @StateObject var viewModel: RecipeSearchViewModel = RecipeSearchViewModel()
     
     var body: some View {
         NavigationStack {
@@ -18,21 +18,16 @@ struct RecipeSearchView: View {
                     TextField("Search", text: $viewModel.searchResult)
                     Button("Search") {
                         Task {
-                            let recipeSearch: RecipeSearch = try await AlamoSession.request(type: .alamofire, API: Constants.baseRecipeRequestURL, query: viewModel.searchResult,
+                            if let recipeSearch: RecipeSearch = await AlamoSession.request(type: .urlsession, API: Constants.baseRecipeRequestURL, query: viewModel.searchResult,
                                 method: .get
-                            )
-                            viewModel.recipes = recipeSearch.results
+                            ) {
+                                viewModel.recipes = recipeSearch.results
+                            }
+                            
                         }
                     }
                     Button("Nutrition") {
-                        Task {
-                            let nutritionResponse: NutritionResponse = try await AlamoSession.request(type: .alamofire, API: Constants.recipeNutritionRequestURL, query: viewModel.searchResult,
-                                method: .get
-                            )
-                            
-                            viewModel.nutritionGuess = nutritionResponse.calories.value
-                            viewModel.showNutritionAlertfalse = true
-                        }
+                        viewModel.identifyNutririon()
                     }
                 }
                 List(content: {

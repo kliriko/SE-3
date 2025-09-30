@@ -29,8 +29,9 @@ nonisolated struct RecipeInformation: Codable {
 
 struct Ingridient: Codable, Identifiable {
     let id: Int
-    let aisle: String
-    let amount: Int
+    let amount: Double
+    let original: String
+    let image: String?
 }
 
 nonisolated struct NutritionResponse: Codable {
