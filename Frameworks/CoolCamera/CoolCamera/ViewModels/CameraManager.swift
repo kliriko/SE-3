@@ -11,114 +11,6 @@ import AVFoundation
 import SwiftUI
 import Combine
 
-final class PreviewNSView: NSView {
-    var previewLayer: AVCaptureVideoPreviewLayer? {
-        didSet {
-            wantsLayer = true
-            layer?.sublayers?.forEach { $0.removeFromSuperlayer() }
-            if let pl = previewLayer {
-                pl.frame = bounds
-                pl.autoresizingMask = [.layerWidthSizable, .layerHeightSizable]
-                layer?.addSublayer(pl)
-            }
-        }
-    }
-
-    override func layout() {
-        super.layout()
-        previewLayer?.frame = bounds
-    }
-    
-    // Clean up when view is removed
-    deinit {
-        previewLayer?.removeFromSuperlayer()
-        previewLayer = nil
-    }
-}
-
-struct CameraPreview: NSViewRepresentable {
-    @Binding var session: AVCaptureSession
-
-    func makeNSView(context: Context) -> NSView {
-        let view = PreviewNSView(frame: .zero)
-        view.wantsLayer = true
-
-        DispatchQueue.main.async {
-            let previewLayer = AVCaptureVideoPreviewLayer(session: session)
-            previewLayer.setAffineTransform(CGAffineTransform(scaleX: -1, y: 1))
-            view.previewLayer = previewLayer
-        }
-
-        return view
-    }
-
-    func updateNSView(_ nsView: NSView, context: Context) {
-        if let pv = nsView as? PreviewNSView {
-            if pv.previewLayer?.session !== session {
-                DispatchQueue.main.async {
-                    if pv.previewLayer == nil {
-                        let previewLayer = AVCaptureVideoPreviewLayer(session: session)
-                        previewLayer.setAffineTransform(CGAffineTransform(scaleX: -1, y: 1))
-                        pv.previewLayer = previewLayer
-                    } else {
-                        pv.previewLayer?.session = session
-                    }
-                }
-            }
-        }
-    }
-    
-    static func dismantleNSView(_ nsView: NSView, coordinator: ()) {
-        if let pv = nsView as? PreviewNSView {
-            pv.previewLayer?.removeFromSuperlayer()
-            pv.previewLayer = nil
-        }
-    }
-}
-
-class CaptureDelegate: NSObject, AVCapturePhotoCaptureDelegate, AVCaptureFileOutputRecordingDelegate {
-    var onVideoRecordingFinished: ((URL) -> Void)?
-    
-    func photoOutput(_ output: AVCapturePhotoOutput, didFinishProcessingPhoto photo: AVCapturePhoto, error: Error?) {
-        if let error = error {
-            print("Error capturing photo: \(error)")
-            return
-        }
-        guard let data = photo.fileDataRepresentation(), let image = NSImage(data: data) else {
-            print("Could not convert photo data to NSImage")
-            return
-        }
-        
-        savePhotoData(data)
-    }
-    
-    private func savePhotoData(_ data: Data) {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "yyyy-MM-dd_HH-mm-ss"
-        let fileName = "CoolPhoto_\(formatter.string(from: Date())).jpg"
-        
-        let fileURL = FileManager.default.temporaryDirectory.appendingPathComponent(fileName)
-        do {
-            try data.write(to: fileURL)
-            print("Photo saved to:", fileURL.path)
-        } catch {
-            print("Error saving photo:", error.localizedDescription)
-        }
-    }
-    
-    func fileOutput(_ output: AVCaptureFileOutput,
-                    didFinishRecordingTo outputFileURL: URL,
-                    from connections: [AVCaptureConnection],
-                    error: Error?) {
-        if let error = error {
-            print("Error recording movie: \(error.localizedDescription)")
-        } else {
-            print("Video recording finished: \(outputFileURL.path)")
-            onVideoRecordingFinished?(outputFileURL)
-        }
-    }
-}
-
 class CameraManager: ObservableObject {
     @Published var session = AVCaptureSession()
     @Published var isSessionRunning = false
@@ -208,7 +100,6 @@ class CameraManager: ObservableObject {
 
     func stopSessionAndTearDown() {
         sessionQueue.async {
-            // Stop recording if active
             if let movieOutput = self.movieOutput, movieOutput.isRecording {
                 movieOutput.stopRecording()
             }
@@ -269,5 +160,48 @@ class CameraManager: ObservableObject {
         formatter.dateFormat = "yyyy-MM-dd_HH-mm-ss"
         let filename = "CoolVideo_\(formatter.string(from: Date())).mov"
         return tempDir.appendingPathComponent(filename)
+    }
+}
+
+class CaptureDelegate: NSObject, AVCapturePhotoCaptureDelegate, AVCaptureFileOutputRecordingDelegate {
+    var onVideoRecordingFinished: ((URL) -> Void)?
+    
+    func photoOutput(_ output: AVCapturePhotoOutput, didFinishProcessingPhoto photo: AVCapturePhoto, error: Error?) {
+        if let error = error {
+            print("Error capturing photo: \(error)")
+            return
+        }
+        guard let data = photo.fileDataRepresentation(), let image = NSImage(data: data) else {
+            print("Could not convert photo data to NSImage")
+            return
+        }
+        
+        savePhotoData(data)
+    }
+    
+    private func savePhotoData(_ data: Data) {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd_HH-mm-ss"
+        let fileName = "CoolPhoto_\(formatter.string(from: Date())).jpg"
+        
+        let fileURL = FileManager.default.temporaryDirectory.appendingPathComponent(fileName)
+        do {
+            try data.write(to: fileURL)
+            print("Photo saved to:", fileURL.path)
+        } catch {
+            print("Error saving photo:", error.localizedDescription)
+        }
+    }
+    
+    func fileOutput(_ output: AVCaptureFileOutput,
+                    didFinishRecordingTo outputFileURL: URL,
+                    from connections: [AVCaptureConnection],
+                    error: Error?) {
+        if let error = error {
+            print("Error recording movie: \(error.localizedDescription)")
+        } else {
+            print("Video recording finished: \(outputFileURL.path)")
+            onVideoRecordingFinished?(outputFileURL)
+        }
     }
 }
