@@ -37,7 +37,7 @@ class Lexer {
     }
     
     func getNextToken() -> Token? {
-        // пропуск пробілів
+        // skip whitespace
         while let ch = peek(), ch.isWhitespace {
             advance()
         }
