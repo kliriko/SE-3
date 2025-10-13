@@ -14,37 +14,73 @@ struct SubtaskRowView: View {
     
     var body: some View {
         HStack {
-            Text("      – " + subtask.name)
-            Spacer()
-            Toggle(isOn: Binding(
-                get: { subtask.isDone },
-                set: { newValue in
-                    do {
-                        try viewModel.manager.updateSubtask(subtask.name, in: task.name, key: "isDone", value: newValue)
-                        subtask.isDone = newValue
-                        viewModel.updateTasks()
-                    } catch {
-                        print("Failed to toggle subtask isDone: \(error)")
-                    }
-                })
-            ) {
+            Button(action: {
+                do {
+                    try viewModel.manager.updateSubtask(subtask.name, in: task.name, key: "isDone", value: !subtask.isDone)
+                    subtask.isDone.toggle()
+                    viewModel.updateTasks()
+                } catch {
+                    print("Failed to toggle isDone: \(error)")
+                }
+            }) {
+                if subtask.isDone {
+                    Text("      -" + subtask.name)
+                        .strikethrough()
+                } else {
+                    Text("      -" + subtask.name)
+                }
             }
-            .toggleStyle(iOSCheckboxToggleStyle())
+            .buttonStyle(.plain)
+            Spacer()
+            
+            Toggle(isOn: $subtask.notify) { }
+            .onChange(of: task.notify) { _, newValue in
+//                guard viewModel.tasks.contains(where: { $0.id == task.id }) else { return }
+//                
+//                do {
+//                    try viewModel.manager.updateTask(task.name, key: "notify", value: newValue)
+//                    
+//                    DispatchQueue.main.async {
+//                        if newValue {
+//                            viewModel.notificationCenter.cancelNotification(taskName: task.name)
+//                            viewModel.notificationCenter.scheduleLocalNotification(
+//                                title: task.name,
+//                                body: "Task is due soon!",
+//                                date: task.date ?? Date()
+//                            )
+//                        } else {
+//                            viewModel.notificationCenter.cancelNotification(taskName: task.name)
+//                        }
+//                    }
+//                } catch {
+//                    print("Failed to toggle notify: \(error)")
+//                }
+            }
+            
+//            CoolDeleteButton {
+//                do {
+//                    try viewModel.manager.deleteSubtask(subtask.name, in: task.name)
+//                    viewModel.updateTasks()
+//                    viewModel.presentSubtaskPopup = false
+//                }
+//                catch {
+//                    print("failed to delete subtask")
+//                }
+//            }
+        }
+        .swipeActions(edge: .trailing){
             Button(action: {
                 do {
                     try viewModel.manager.deleteSubtask(subtask.name, in: task.name)
                     viewModel.updateTasks()
-                    viewModel.presentSubtaskPopup = false
                 }
                 catch {
-                    print("failed to delete subtask")
+                    print("failed to delete task")
                 }
             }, label: {
-                Image(systemName: "trash")
-                    .font(.system(size: 15, weight: .bold))
-                    .foregroundStyle(Color(.red))
+                Text("Delete")
             })
-            .clipped().buttonStyle(.borderless)
+            .tint(.red)
         }
         .padding(.vertical, 5)
     }

@@ -23,7 +23,6 @@ class NotificationCenter {
          trigger: trigger
         )
         
-        // ? not async ?
         let notificationCenter = UNUserNotificationCenter.current()
         notificationCenter.add(request) { error in
             if let error = error {
@@ -39,10 +38,9 @@ class NotificationCenter {
             idsToCancel = requests.filter { req in
                 req.content.title == taskName
             }.map { $0.identifier}
-
+            
+            UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: idsToCancel)
         }
-        
-        UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: idsToCancel)
     }
     
     func listPendingNotifications() {

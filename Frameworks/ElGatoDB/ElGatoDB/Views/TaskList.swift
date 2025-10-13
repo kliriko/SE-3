@@ -15,7 +15,7 @@ struct TaskList: View {
         NavigationStack {
             VStack{
                 List {
-                    ForEach($viewModel.tasks) { $task in
+                    ForEach($viewModel.tasks.sorted(by: {$0.name.wrappedValue < $1.name.wrappedValue})) { $task in
                         TaskRowView(viewModel: viewModel, task: task)
                         ForEach(task.subTasks) { subtask in
                             SubtaskRowView(viewModel: viewModel, subtask: subtask, task: $task)

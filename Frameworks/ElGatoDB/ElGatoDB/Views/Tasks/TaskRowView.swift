@@ -14,17 +14,23 @@ struct TaskRowView: View {
     var body: some View {
         HStack {
             Button(action: {
-                viewModel.presentSubtaskPopup = true
-                viewModel.lastTaskName = task.name
-            }, label: {
-                Image(systemName: "plus")
-                    .font(.system(size: 15, weight: .bold))
-                    .foregroundStyle(Color(.green))
-            })
-            .clipped()
-            .buttonStyle(.borderless)
-            
-            Text(task.name)
+                do {
+                    try viewModel.manager.updateTask(task.name, key: "isDone", value: !task.isDone)
+                    task.isDone.toggle()
+                    viewModel.updateTasks()
+                } catch {
+                    print("Failed to toggle isDone: \(error)")
+                }
+            }) {
+                if task.isDone {
+                    Text(task.name)
+                        .strikethrough()
+                } else {
+                    Text(task.name)
+                }
+            }
+            .buttonStyle(.plain)
+                
             Spacer()
 
             if let date = task.date {
@@ -36,40 +42,53 @@ struct TaskRowView: View {
                     .background(Capsule().fill(.blue))
             }
             
-            Toggle("Notify", isOn: $task.notify)
-                            .onChange(of: task.notify) { _, newValue in
-                                guard viewModel.tasks.contains(where: { $0.id == task.id }) else { return }
-                                
-                                do {
-                                    try viewModel.manager.updateTask(task.name, key: "notify", value: newValue)
-                                    
-                                    DispatchQueue.main.async {
-                                        if newValue {
-                                            viewModel.notificationCenter.cancelNotification(taskName: task.name)
-                                            viewModel.notificationCenter.scheduleLocalNotification(
-                                                title: task.name,
-                                                body: "Task is due soon!",
-                                                date: task.date ?? Date()
-                                            )
-                                        } else {
-                                            viewModel.notificationCenter.cancelNotification(taskName: task.name)
-                                        }
-                                    }
-                                } catch {
-                                    print("Failed to toggle notify: \(error)")
-                                }
-                            }
-
-            Toggle(isOn: $task.isDone) { }
-                .toggleStyle(iOSCheckboxToggleStyle())
-                .onChange(of: task.isDone) { _, newValue in
-                    do {
-                        try viewModel.manager.updateTask(task.name, key: "isDone", value: newValue)
-                        viewModel.updateTasks()
-                    } catch {
-                        print("Failed to toggle isDone: \(error)")
+            Toggle(isOn: $task.notify) { }
+            .onChange(of: task.notify) { _, newValue in
+                guard viewModel.tasks.contains(where: { $0.id == task.id }) else { return }
+                
+                do {
+                    try viewModel.manager.updateTask(task.name, key: "notify", value: newValue)
+                    
+                    DispatchQueue.main.async {
+                        if newValue {
+                            viewModel.notificationCenter.cancelNotification(taskName: task.name)
+                            viewModel.notificationCenter.scheduleLocalNotification(
+                                title: task.name,
+                                body: "Task is due soon!",
+                                date: task.date ?? Date()
+                            )
+                        } else {
+                            viewModel.notificationCenter.cancelNotification(taskName: task.name)
+                        }
                     }
+                } catch {
+                    print("Failed to toggle notify: \(error)")
                 }
+            }
+            
+        }
+        .swipeActions(edge: .trailing){
+            Button(action: {
+                do {
+                    try viewModel.manager.deleteTask(task.name)
+                    viewModel.updateTasks()
+                }
+                catch {
+                    print("failed to delete task")
+                }
+            }, label: {
+                Text("Delete")
+            })
+            .tint(.red)
+        }
+        .swipeActions(edge: .leading){
+            Button(action: {
+                viewModel.presentSubtaskPopup = true
+                viewModel.lastTaskName = task.name
+            }, label: {
+                Text("Subtask")
+            })
+            .tint(.green)
         }
     }
 }
