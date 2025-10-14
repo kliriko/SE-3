@@ -9,7 +9,7 @@ import SwiftUI
 
 struct TaskList: View {
     @Environment(\.managedObjectContext) var managedObjectContext
-    @StateObject private var viewModel = TaskListViewModel(usingRealm: false)
+    @StateObject var viewModel: TaskListViewModel
     
     var body: some View {
         NavigationStack {

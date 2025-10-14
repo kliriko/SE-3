@@ -31,6 +31,14 @@ class RealmTodoSubtask: Object {
 }
 
 struct Task: Identifiable {
+    var name: String = ""
+    var isDone: Bool = false
+    var date: Date? = nil
+    var subTasks: [SubTask] = []
+    var id: String { name }
+    var notificationEnabled: Bool = true
+    var notify: Bool = true
+    
     init(_ task: TodoTask) throws {
         name = task.name
         date = task.dueDate
@@ -53,15 +61,14 @@ struct Task: Identifiable {
         }
     }
     
-    init() {}
+    init(notification: Notification) {
+        name = notification.title
+        date = notification.dueDate
+        isDone = false
+        notify = true
+    }
     
-    var name: String = ""
-    var isDone: Bool = false
-    var date: Date? = nil
-    var subTasks: [SubTask] = []
-    var id: String { name }
-    var notificationEnabled: Bool = true
-    var notify: Bool = true
+    init() {}
 }
 
 struct SubTask: Hashable, Identifiable {

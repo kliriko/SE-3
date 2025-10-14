@@ -9,18 +9,22 @@ import SwiftUI
 import CoreData
 
 struct ContentView: View {
+    @StateObject var taskListViewModel: TaskListViewModel = TaskListViewModel(usingRealm: false)
+    @StateObject var inboxViewModel: InboxViewModel = InboxViewModel()
     var body: some View {
-        NavigationView {
-            TaskList()
-                .onAppear() {
-                    UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .badge]) { granted, error in
-                        if granted {
-                            print("Permission granted")
-                        } else if let error = error {
-                            print("Permission denied: \(error)")
-                        }
-                    }
+        TabView {
+            NavigationView {
+                TaskList(viewModel: taskListViewModel)
+            }
+            .tabItem {
+                Label("Tasks", systemImage: "list.number")
+            }
+            
+            InboxView(inboxViewModel: inboxViewModel, taskViewModel: taskListViewModel)
+                .tabItem {
+                    Label("Inbox", systemImage: "tray")
                 }
         }
+        
     }
 }
