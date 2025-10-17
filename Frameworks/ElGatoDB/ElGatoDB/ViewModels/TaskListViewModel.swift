@@ -14,8 +14,8 @@ class TaskListViewModel: ObservableObject {
     @Published var tasks: [Task] = []
     @Published var presentTaskPopup: Bool = false
     @Published var presentSubtaskPopup: Bool = false
-    var notificationCenter = NotificationCenter()
-    var manager: DrumNDataBase!
+    var notificationCenter = MyNotificationCenter()
+    var dataManager: DrumNDataBase!
     
     private var usingRealm: Bool
     
@@ -30,18 +30,18 @@ class TaskListViewModel: ObservableObject {
     
     func initContext(context: NSManagedObjectContext) {
         if usingRealm {
-            manager = RealmManager()
+            dataManager = RealmManager()
         } else {
-            manager = CoreDataManager(context)
+            dataManager = CoreDataManager(context)
         }
     }
     
     func updateTasks() {
-        tasks = manager.getAllTasks()
+        tasks = dataManager.getAllTasks()
     }
     
     func taskExists(_ name: String) -> Bool {
-        !manager.getAllTasks().filter({$0.name == name}).isEmpty
+        !dataManager.getAllTasks().filter({$0.name == name}).isEmpty
     }
     
     func subtaskExists(_ name: String) -> Bool {
@@ -51,7 +51,7 @@ class TaskListViewModel: ObservableObject {
     
     func toggleTaskIsDone(_ task: Task) {
         do {
-            try manager.updateTask(task.name, key: "isDone", value: !task.isDone)
+            try dataManager.updateTask(task.name, key: "isDone", value: !task.isDone)
             updateTasks()
         } catch {
             print("Failed to update isDone for task \(task.name): \(error)")
@@ -60,7 +60,7 @@ class TaskListViewModel: ObservableObject {
 
     func toggleSubtaskIsDone(_ subtask: SubTask, in parentTask: Task) {
         do {
-            try manager.updateSubtask(subtask.name, in: parentTask.name, key: "isDone", value: !subtask.isDone)
+            try dataManager.updateSubtask(subtask.name, in: parentTask.name, key: "isDone", value: !subtask.isDone)
             updateTasks()
         } catch {
             print("Failed to update isDone for subtask \(subtask.name) in \(parentTask.name): \(error)")

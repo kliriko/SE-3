@@ -2,7 +2,7 @@
 //  TodoSubtask+CoreDataProperties.swift
 //  ElGatoDB
 //
-//  Created by Володимир on 11.10.2025.
+//  Created by Володимир on 15.10.2025.
 //
 //
 
@@ -21,7 +21,7 @@ extension TodoSubtask {
     @NSManaged public var isDone: Bool
     @NSManaged public var name: String
     @NSManaged public var notify: Bool
-    @NSManaged public var task: TodoTask?
+    @NSManaged public var task: TodoTask
 
 }
 

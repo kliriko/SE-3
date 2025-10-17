@@ -7,17 +7,20 @@
 
 import Foundation
 
-enum NotificationStatus {
+enum NotificationStatus: String {
     case accepted, declined, pending
 }
 
 struct IncomingNotification: Identifiable {
     var task: Task
-    var status: NotificationStatus = .pending
-    var id: String
+    var status: NotificationStatus!
+    var id: String = UUID().uuidString
+    var title: String
     
-    init (_ notification: Notification) {
+    init (_ notification: MyNotification) {
         self.task = Task(notification: notification)
-        self.id = notification.title
+        self.title = notification.title
+        self.status = NotificationStatus(rawValue: notification.status)
     }
 }
+

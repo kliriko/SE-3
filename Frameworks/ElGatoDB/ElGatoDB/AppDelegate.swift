@@ -33,6 +33,15 @@ class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDele
                 print("Notification permission not granted.")
             }
         }
+//        do {
+//            let fetchRequest: NSFetchRequest<NSFetchRequestResult> = MyNotification.fetchRequest()
+//            let deleteRequest = NSBatchDeleteRequest(fetchRequest: fetchRequest)
+//
+//            try PersistenceController.shared.container.viewContext.execute(deleteRequest)
+//            try PersistenceController.shared.container.viewContext.save()
+//        } catch {
+//            
+//        }
 
         return true
     }
@@ -64,7 +73,7 @@ class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDele
         
         // MARK: Create core data object
         let context = PersistenceController.shared.container.viewContext
-        let notification = Notification(context: context)
+        let notification = MyNotification(context: context)
         notification.status = "pending"
         notification.title = title
         notification.dueDate = dueDate
@@ -73,8 +82,10 @@ class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDele
             print("saved context")
         } catch { print("o no la policia") }
         
+        NotificationCenter.default.post(name: Notification.Name("la policia"), object: nil)
         completionHandler(.newData)
      }
+    
      func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void
      ) {
         completionHandler([.banner, .sound, .badge])

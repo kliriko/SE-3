@@ -15,7 +15,7 @@ struct TaskRowView: View {
         HStack {
             Button(action: {
                 do {
-                    try viewModel.manager.updateTask(task.name, key: "isDone", value: !task.isDone)
+                    try viewModel.dataManager.updateTask(task.name, key: "isDone", value: !task.isDone)
                     task.isDone.toggle()
                     viewModel.updateTasks()
                 } catch {
@@ -47,7 +47,7 @@ struct TaskRowView: View {
                 guard viewModel.tasks.contains(where: { $0.id == task.id }) else { return }
                 
                 do {
-                    try viewModel.manager.updateTask(task.name, key: "notify", value: newValue)
+                    try viewModel.dataManager.updateTask(task.name, key: "notify", value: newValue)
                     
                     DispatchQueue.main.async {
                         if newValue {
@@ -70,7 +70,7 @@ struct TaskRowView: View {
         .swipeActions(edge: .trailing){
             Button(action: {
                 do {
-                    try viewModel.manager.deleteTask(task.name)
+                    try viewModel.dataManager.deleteTask(task.name)
                     viewModel.updateTasks()
                 }
                 catch {

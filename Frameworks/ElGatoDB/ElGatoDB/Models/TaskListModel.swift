@@ -61,7 +61,7 @@ struct Task: Identifiable {
         }
     }
     
-    init(notification: Notification) {
+    init(notification: MyNotification) {
         name = notification.title
         date = notification.dueDate
         isDone = false

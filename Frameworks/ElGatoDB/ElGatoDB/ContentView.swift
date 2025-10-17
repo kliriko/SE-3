@@ -9,8 +9,10 @@ import SwiftUI
 import CoreData
 
 struct ContentView: View {
+    @Environment(\.managedObjectContext) var managedObjectContext
     @StateObject var taskListViewModel: TaskListViewModel = TaskListViewModel(usingRealm: false)
     @StateObject var inboxViewModel: InboxViewModel = InboxViewModel()
+    
     var body: some View {
         TabView {
             NavigationView {
@@ -25,6 +27,8 @@ struct ContentView: View {
                     Label("Inbox", systemImage: "tray")
                 }
         }
-        
+        .onAppear {
+            inboxViewModel.initContext(context: managedObjectContext)
+        }
     }
 }

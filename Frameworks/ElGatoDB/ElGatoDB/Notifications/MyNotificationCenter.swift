@@ -8,7 +8,7 @@
 import Foundation
 import UserNotifications
 
-class NotificationCenter {
+class MyNotificationCenter {
     func scheduleLocalNotification(title: String, body: String, date: Date) {
         let content = UNMutableNotificationContent()
         content.title = title

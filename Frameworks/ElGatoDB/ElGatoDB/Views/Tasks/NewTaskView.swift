@@ -31,7 +31,7 @@ struct NewTaskView: View {
             
             Button("Add task") {
                 do {
-                    try viewModel.manager.createTask(taskName, dueDate: date)
+                    try viewModel.dataManager.createTask(taskName, dueDate: date)
                     viewModel.notificationCenter.scheduleLocalNotification(title: taskName, body: "Your task is due soon", date: date ?? Date())
                     viewModel.updateTasks()
                 } catch {

@@ -11,31 +11,50 @@ import Combine
 import CoreData
 
 class InboxViewModel: ObservableObject {
-    @Environment(\.managedObjectContext) var managedObjectContext
+    var context: NSManagedObjectContext?
     @Published var incomingNotifications: [IncomingNotification] = []
     
-    @FetchRequest(sortDescriptors: [NSSortDescriptor(keyPath: \Notification.dueDate, ascending: true)], animation: .default)
-    var notifications: FetchedResults<Notification>
-    
-    func update(with notifications: [Notification]) {
-        self.incomingNotifications = notifications.map { IncomingNotification($0) }
+    func initContext(context: NSManagedObjectContext) {
+        self.context = context
     }
     
     func fetchNotifications() {
-        let fetchRequest: NSFetchRequest<Notification> = Notification.fetchRequest()
-        incomingNotifications = try! managedObjectContext.fetch(fetchRequest).map { IncomingNotification($0) }
+        guard let context = context else {
+            print("Failed to fetch. No core data context")
+            return
+        }
+        let fetchRequest: NSFetchRequest<MyNotification> = MyNotification.fetchRequest()
+        do {
+            incomingNotifications = try context.fetch(fetchRequest).map { IncomingNotification($0) }
+            print(incomingNotifications)
+        } catch {
+            print("Failed to fetch notifications: \(error)")
+        }
     }
     
-    func updateNotification(name: String, isAccepted: Bool) {
-        let fetchRequest: NSFetchRequest<Notification> = Notification.fetchRequest()
-        fetchRequest.predicate = NSPredicate(format: "name == %@", name)
+    func updateNotification(title: String, isAccepted: Bool) {
+        guard let context = context else { return }
+        let fetchRequest: NSFetchRequest<MyNotification> = MyNotification.fetchRequest()
+        fetchRequest.predicate = NSPredicate(format: "title == %@", title)
         
-        guard let notification = try! managedObjectContext.fetch(fetchRequest).first else {
-            print("Failed to fetch notification with name \(name)")
+        guard let notification = try! context.fetch(fetchRequest).first else {
+            print("Failed to fetch notification with title \(title)")
             return
         }
         
-        notification.status = isAccepted ? "accepted" : "declined"
-        try! managedObjectContext.save()
+        notification.setValue(isAccepted ? "accepted" : "declined", forKey: "status")
+        print(notification.status)
+        do {
+            try context.save()
+        } catch {
+            print("failed to save notification")
+        }
+        
+        
+        guard let notification = try! context.fetch(fetchRequest).first else {
+            print("Failed to fetch notification with title \(title)")
+            return
+        }
+        print(notification.status)
     }
 }

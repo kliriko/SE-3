@@ -16,7 +16,7 @@ struct SubtaskRowView: View {
         HStack {
             Button(action: {
                 do {
-                    try viewModel.manager.updateSubtask(subtask.name, in: task.name, key: "isDone", value: !subtask.isDone)
+                    try viewModel.dataManager.updateSubtask(subtask.name, in: task.name, key: "isDone", value: !subtask.isDone)
                     subtask.isDone.toggle()
                     viewModel.updateTasks()
                 } catch {
@@ -71,7 +71,7 @@ struct SubtaskRowView: View {
         .swipeActions(edge: .trailing){
             Button(action: {
                 do {
-                    try viewModel.manager.deleteSubtask(subtask.name, in: task.name)
+                    try viewModel.dataManager.deleteSubtask(subtask.name, in: task.name)
                     viewModel.updateTasks()
                 }
                 catch {

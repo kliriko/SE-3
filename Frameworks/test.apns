@@ -1,0 +1,11 @@
+{
+  "aps": {
+    "alert": {
+      "title": "2",
+      "body": "Your assignment is due tomorrow!"
+    },
+    "sound": "default"
+  },
+  "dueDate": "2025-10-19T10:00:00Z",
+  "Simulator Target Bundle": "fedorych.ElGatoDB"
+}
