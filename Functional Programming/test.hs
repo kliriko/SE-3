@@ -1,45 +1,58 @@
--- Test module for LL(1) grammar functions
--- This file contains test cases for all specified functions.
--- Tests are written using simple assertions with print statements for verification.
--- In a real testing framework like HUnit or QuickCheck, these would be formalized.
--- For simplicity, we'll define a test function that checks equality and reports.
+import Fedorych07
 
-import Data.List (sort, sortBy)  -- For sorting to normalize outputs where order might vary
-import Fedorych06
+-- Test functions
+testBalance :: [(String, Bool)] -> [Bool]
+testBalance cases = [balance str == expected | (str, expected) <- cases]
 
--- Assuming the functions are defined in another module, but for completeness, 
--- we'll assume they are available in scope.
+testAnRight :: [(String, Maybe Integer)] -> [Bool]
+testAnRight cases = [anRight str == expected | (str, expected) <- cases]
 
--- Helper to normalize Predict and Control by sorting
-normPredict :: Predict -> Predict
-normPredict = sortBy (\(a,_) (b,_) -> compare a b) . map (\(n,ts) -> (n, sort ts))
+testAnLeft :: [(String, Maybe Integer)] -> [Bool]
+testAnLeft cases = [anLeft str == expected | (str, expected) <- cases]
 
-normControl :: Control -> Control
-normControl = sortBy (\((a,b),_) ((c,d),_) -> compare (a,b) (c,d))
+testAnBexp :: [(String, Maybe Bexp)] -> [Bool]
+testAnBexp cases = [anBexp str == expected | (str, expected) <- cases]
 
--- Test runner
-testEq :: (Eq a, Show a) => String -> a -> a -> IO ()
-testEq name expected actual =
-  if expected == actual
-    then putStrLn $ name ++ ": PASS"
-    else putStrLn $ name ++ ": FAIL - Expected: " ++ show expected ++ ", Got: " ++ show actual
+-- Placeholder for testAnXML (since casablanca and casablancaParsed are not provided)
+testAnXML :: String -> Maybe XML -> Bool
+testAnXML str expected = anXML str == expected
 
+-- Test cases
+testBalanceCases :: [(String, Bool)]
+testBalanceCases =
+  [ ("{[[]  ()  ] }   {}", True)
+  , ("{[[}]]  ( ) ] }  {}", False)
+  ]
 
--- Tests for buildNxt
-testBuildNxt :: IO ()
-testBuildNxt = do
-  testEq "buildNxt1" (normPredict [('A',"ab"),('S',"$ab")]) (normPredict $ buildNxt gr0 pFst0)
-  testEq "buildNxt2" (normPredict [('S',"$)"),('T',"$)+-"),('V',"$)")]) (normPredict $ buildNxt gr1 pFst1)
-  -- Additional: empty
-  testEq "buildNxt3" [] (buildNxt [] [])
-  -- Simple
-  testEq "buildNxt4" (normPredict [('S',"$")]) (normPredict $ buildNxt [('S',"a")] [('S',"a")])
-  -- With multiple
-  testEq "buildNxt5" (normPredict pNxt2) (normPredict $ buildNxt gr2 pFst2)
+testAnRightCases :: [(String, Maybe Integer)]
+testAnRightCases =
+  [ ("6-(8+56-31)*1", Just (-27))
+  , ("23-89-", Nothing)
+  ]
+  
+testAnLeftCases :: [(String, Maybe Integer)]
+testAnLeftCases =
+  [ ("  12 +  7 * 3  ", Just 57) -- (12 + (7 * 3)) = 12 + 21 = 57
+  , ("34 7 +8", Nothing)
+  ]
 
--- Main to run all tests
+testAnBexpCases :: [(String, Maybe Bexp)]
+testAnBexpCases =
+  [ ("(x|y)&!z", Just (And (Or (Bvar 'x') (Bvar 'y')) (Not (Bvar 'z'))))
+  , ("a|b(true)", Nothing)
+  ]
+
+-- Main function to run tests
 main :: IO ()
 main = do
-  putStrLn "Running tests..."
-  testBuildNxt
-  putStrLn "Tests completed."
+  putStrLn "Testing balance:"
+  print $ testBalance testBalanceCases
+  putStrLn "Testing anRight:"
+  print $ testAnRight testAnRightCases
+  putStrLn "Testing anLeft:"
+  print $ testAnLeft testAnLeftCases
+  putStrLn "Testing anBexp:"
+  print $ testAnBexp testAnBexpCases
+  -- Note: anXML test requires casablanca and casablancaParsed, which are not defined
+  -- putStrLn "Testing anXML:"
+  -- print $ testAnXML casablanca (Just casablancaParsed)
