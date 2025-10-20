@@ -32,9 +32,9 @@ class CoreDataManager: DrumNDataBase {
         }
     }
     
-    func getAllTasks() -> [Task] {
+    func getAllTasks() -> [MyTask] {
         let fetchRequest: NSFetchRequest<TodoTask> = TodoTask.fetchRequest()
-        return try! context.fetch(fetchRequest).map { try! Task($0)}
+        return try! context.fetch(fetchRequest).map { try! MyTask($0)}
     }
     
     func createTask(_ name: String, dueDate: Date? = nil) throws {
@@ -51,14 +51,14 @@ class CoreDataManager: DrumNDataBase {
         }
     }
         
-    func getTask(_ name: String) throws -> Task {
+    func getTask(_ name: String) throws -> MyTask {
         let fetchRequest: NSFetchRequest<TodoTask> = TodoTask.fetchRequest()
         fetchRequest.predicate = NSPredicate(format: "name == %@", name)
         do {
             guard let task = try context.fetch(fetchRequest).first else {
                 throw DrumNDataBaseError.TaskNotFound(name: name)
             }
-            return try Task(task)
+            return try MyTask(task)
         } catch {
             throw DrumNDataBaseError.TaskNotFound(name: name)
         }

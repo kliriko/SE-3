@@ -17,7 +17,7 @@ enum DrumNDataBaseError: Error {
 protocol DrumNDataBase {
     func createTask (_ name: String, dueDate: Date?) throws
     
-    func getTask (_ name: String) throws -> Task
+    func getTask (_ name: String) throws -> MyTask
     
     func updateTask<rowType> (_ name: String, key: String, value: rowType) throws
     
@@ -31,5 +31,5 @@ protocol DrumNDataBase {
     
     func deleteSubtask (_ name: String, in taskName: String) throws
     
-    func getAllTasks() -> [Task]
+    func getAllTasks() -> [MyTask]
 }

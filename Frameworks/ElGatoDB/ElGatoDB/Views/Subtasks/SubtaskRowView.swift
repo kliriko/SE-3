@@ -10,7 +10,7 @@ import SwiftUI
 struct SubtaskRowView: View {
     var viewModel: TaskListViewModel
     @State var subtask: SubTask
-    @Binding var task: Task
+    @Binding var task: MyTask
     
     var body: some View {
         HStack {
@@ -18,7 +18,9 @@ struct SubtaskRowView: View {
                 do {
                     try viewModel.dataManager.updateSubtask(subtask.name, in: task.name, key: "isDone", value: !subtask.isDone)
                     subtask.isDone.toggle()
-                    viewModel.updateTasks()
+                    Task {
+                        await viewModel.updateTasks()
+                    }
                 } catch {
                     print("Failed to toggle isDone: \(error)")
                 }
@@ -72,7 +74,9 @@ struct SubtaskRowView: View {
             Button(action: {
                 do {
                     try viewModel.dataManager.deleteSubtask(subtask.name, in: task.name)
-                    viewModel.updateTasks()
+                    Task {
+                        await viewModel.updateTasks()
+                    }
                 }
                 catch {
                     print("failed to delete task")
@@ -87,5 +91,5 @@ struct SubtaskRowView: View {
 }
 
 #Preview {
-    SubtaskRowView(viewModel: TaskListViewModel(usingRealm: false), subtask: SubTask(), task: .constant(Task()))
+    SubtaskRowView(viewModel: TaskListViewModel(usingRealm: false), subtask: SubTask(), task: .constant(MyTask()))
 }

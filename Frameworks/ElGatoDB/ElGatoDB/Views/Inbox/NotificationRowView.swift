@@ -23,7 +23,9 @@ struct NotificationRowView: View {
                     
                     try! taskViewModel.dataManager.createTask(message.task.name, dueDate: message.task.date)
                     taskViewModel.notificationCenter.scheduleLocalNotification(title: message.task.name, body: "", date: message.task.date!)
-                    taskViewModel.updateTasks()
+                    Task {
+                        await taskViewModel.updateTasks()
+                    }
                 }, label: {
                     Image(systemName: "checkmark")
                 })

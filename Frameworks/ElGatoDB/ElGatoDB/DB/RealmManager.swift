@@ -17,10 +17,10 @@ class RealmManager: DrumNDataBase {
         return !todosWithName.isEmpty
     }
     
-    func getAllTasks() -> [Task] {
+    func getAllTasks() -> [MyTask] {
         let todos = realm.objects(RealmTodoTask.self)
         do {
-            return try todos.map { try Task($0) }
+            return try todos.map { try MyTask($0) }
         }
         catch {
             print("Failed to initialize task from Realm" + error.localizedDescription)
@@ -37,14 +37,14 @@ class RealmManager: DrumNDataBase {
         }
     }
     
-    func getTask(_ name: String) throws -> Task {
+    func getTask(_ name: String) throws -> MyTask {
         let todos = realm.objects(RealmTodoTask.self)
         let todosWithName = todos.where {
             $0.name == name
         }
         
         do {
-            return try Task(todosWithName.first!)
+            return try MyTask(todosWithName.first!)
         }
         catch {
             throw DrumNDataBaseError.TaskNotFound(name: name)

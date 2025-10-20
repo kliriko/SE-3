@@ -11,9 +11,14 @@ import CoreData
 import SwiftUI
 
 class TaskListViewModel: ObservableObject {
-    @Published var tasks: [Task] = []
+    @Published var tasks: [MyTask] = []
     @Published var presentTaskPopup: Bool = false
     @Published var presentSubtaskPopup: Bool = false
+    
+    @Published var verified = false
+    @Published var protectedTasks: [MyTask] = []
+    @Published var authManager: AuthManager = AuthManager()
+    
     var notificationCenter = MyNotificationCenter()
     var dataManager: DrumNDataBase!
     
@@ -26,6 +31,11 @@ class TaskListViewModel: ObservableObject {
         self.usingRealm = usingRealm
         dateFormatter.dateStyle = .medium
         dateFormatter.timeStyle = .short
+        
+        NotificationCenter.default.addObserver(forName: UIApplication.willTerminateNotification, object: nil, queue: .main) { _ in
+            print("terminate")
+            self.verified = false
+        }
     }
     
     func initContext(context: NSManagedObjectContext) {
@@ -36,8 +46,9 @@ class TaskListViewModel: ObservableObject {
         }
     }
     
-    func updateTasks() {
+    func updateTasks() async {
         tasks = dataManager.getAllTasks()
+        protectedTasks = await authManager.getProtectedTasks()
     }
     
     func taskExists(_ name: String) -> Bool {
@@ -49,19 +60,24 @@ class TaskListViewModel: ObservableObject {
         return !allSubtasks.filter({$0.name == name}).isEmpty
     }
     
-    func toggleTaskIsDone(_ task: Task) {
+    func toggleTaskIsDone(_ task: MyTask) async {
         do {
             try dataManager.updateTask(task.name, key: "isDone", value: !task.isDone)
-            updateTasks()
+            Task {
+                await updateTasks()
+            }
         } catch {
             print("Failed to update isDone for task \(task.name): \(error)")
         }
     }
 
-    func toggleSubtaskIsDone(_ subtask: SubTask, in parentTask: Task) {
+    func toggleSubtaskIsDone(_ subtask: SubTask, in parentTask: MyTask) async{
         do {
             try dataManager.updateSubtask(subtask.name, in: parentTask.name, key: "isDone", value: !subtask.isDone)
-            updateTasks()
+            Task {
+                await updateTasks()
+            }
+            
         } catch {
             print("Failed to update isDone for subtask \(subtask.name) in \(parentTask.name): \(error)")
         }

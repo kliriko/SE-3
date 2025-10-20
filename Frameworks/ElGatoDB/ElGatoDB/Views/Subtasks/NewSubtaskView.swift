@@ -23,8 +23,10 @@ struct NewSubtaskView: View {
             
             Button("Add subtask") {
                 do {
-                    try viewModel.dataManager.createSubtask(taskName, in: parentTaskName)
-                    viewModel.updateTasks()
+                    Task {
+                        try viewModel.dataManager.createSubtask(taskName, in: parentTaskName)
+                        await viewModel.updateTasks()
+                    }
                 } catch {
                     print("Failed to add new subtask")
                 }

@@ -12,13 +12,13 @@ enum NotificationStatus: String {
 }
 
 struct IncomingNotification: Identifiable {
-    var task: Task
+    var task: MyTask
     var status: NotificationStatus!
     var id: String = UUID().uuidString
     var title: String
     
     init (_ notification: MyNotification) {
-        self.task = Task(notification: notification)
+        self.task = MyTask(notification: notification)
         self.title = notification.title
         self.status = NotificationStatus(rawValue: notification.status)
     }

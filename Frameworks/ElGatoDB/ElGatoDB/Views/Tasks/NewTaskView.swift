@@ -11,6 +11,9 @@ struct NewTaskView: View {
     @ObservedObject var viewModel: TaskListViewModel
     @State var taskName : String = ""
     @State private var date: Date? = nil
+    @State private var isProtected: Bool = false
+    private var authManager = AuthManager()
+    
     private var dateForPicker: Binding<Date> {
         Binding<Date>(
             get: { date ?? Date() },
@@ -29,23 +32,37 @@ struct NewTaskView: View {
             TextField("Enter task name", text: $taskName)
                 .textFieldStyle(RoundedBorderTextFieldStyle())
             
-            Button("Add task") {
-                do {
-                    try viewModel.dataManager.createTask(taskName, dueDate: date)
+            HStack {
+                Button("Add task") {
+                    if(isProtected) {
+                        try! authManager.addProtectedTask(MyTask(name: taskName, dueDate: date))
+                    } else {
+                        do {
+                            try viewModel.dataManager.createTask(taskName, dueDate: date)
+                        } catch {
+                            print("Failed to add new task")
+                        }
+                    }
+                    Task {
+                        await viewModel.updateTasks()
+                    }
                     viewModel.notificationCenter.scheduleLocalNotification(title: taskName, body: "Your task is due soon", date: date ?? Date())
-                    viewModel.updateTasks()
-                } catch {
-                    print("Failed to add new task")
+                    viewModel.presentTaskPopup = false
                 }
+                .frame(maxWidth: .infinity)
+                .padding()
+                .background(Color.blue)
+                .foregroundColor(.white)
+                .clipShape(RoundedRectangle(cornerRadius: 10))
+                .fontWeight(.bold)
                 
-                viewModel.presentTaskPopup = false
+                Button(action: {
+                    isProtected.toggle()
+                }, label: {
+                    Image(systemName: isProtected ? "shield.fill" : "shield")
+                })
+                .buttonStyle(.plain)
             }
-            .frame(maxWidth: .infinity)
-            .padding()
-            .background(Color.blue)
-            .foregroundColor(.white)
-            .clipShape(RoundedRectangle(cornerRadius: 10))
-            .fontWeight(.bold)
             
             DatePicker(
                     "Deadline",

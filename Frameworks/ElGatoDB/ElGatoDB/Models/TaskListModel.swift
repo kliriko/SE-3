@@ -30,7 +30,7 @@ class RealmTodoSubtask: Object {
     @Persisted var notify: Bool = true
 }
 
-struct Task: Identifiable {
+struct MyTask: Identifiable, Codable {
     var name: String = ""
     var isDone: Bool = false
     var date: Date? = nil
@@ -40,10 +40,10 @@ struct Task: Identifiable {
     var notify: Bool = true
     
     init(_ task: TodoTask) throws {
-        name = task.name
-        date = task.dueDate
-        isDone = task.isDone
-        notify = task.notify
+        self.name = task.name
+        self.date = task.dueDate
+        self.isDone = task.isDone
+        self.notify = task.notify
         
         if let subTaskEntities = task.subTasks?.allObjects as? [TodoSubtask] {
             subTasks = subTaskEntities.map { SubTask(name: $0.name, isDone: $0.isDone) }
@@ -53,8 +53,8 @@ struct Task: Identifiable {
     }
     
     init(_ task: RealmTodoTask) throws {
-        name = task.name
-        date = task.date
+        self.name = task.name
+        self.date = task.date
         
         subTasks = task.subtasks.map { realmSubtask in
             SubTask(name: realmSubtask.name, isDone: realmSubtask.isDone)
@@ -62,16 +62,21 @@ struct Task: Identifiable {
     }
     
     init(notification: MyNotification) {
-        name = notification.title
-        date = notification.dueDate
-        isDone = false
-        notify = true
+        self.name = notification.title
+        self.date = notification.dueDate
+        self.isDone = false
+        self.notify = true
+    }
+    
+    init(name: String, dueDate: Date?) {
+        self.name = name
+        self.date = dueDate
     }
     
     init() {}
 }
 
-struct SubTask: Hashable, Identifiable {
+struct SubTask: Hashable, Identifiable, Codable {
     var name: String = ""
     var isDone: Bool = false
     var id: String { name }
