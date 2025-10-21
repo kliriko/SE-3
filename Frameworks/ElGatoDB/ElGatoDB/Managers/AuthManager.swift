@@ -61,7 +61,6 @@ class AuthManager: ObservableObject {
         ]
         let status = SecItemAdd(query.merging(attributes) { (_, new) in new } as CFDictionary, nil)
         if status == errSecDuplicateItem {
-            // Update if already exists
             let updateStatus = SecItemUpdate(query as CFDictionary, attributes as CFDictionary)
             guard updateStatus == errSecSuccess else {
                 throw KeychainError.unexpectedStatus(updateStatus)
@@ -134,28 +133,16 @@ class AuthManager: ObservableObject {
             return []
         }
     }
-
-//    func addProtectedTask(_ task: MyTask) throws {
-//        var tasks = try awaitSafeGetProtectedTasks()
-//        
-//        if let index = tasks.firstIndex(where: { $0.id == task.id }) {
-//            tasks[index] = task
-//        } else {
-//            tasks.append(task)
-//        }
-//
-//        try saveTasksToKeychain(tasks)
-//    }
     
     func addProtectedTask(_ task: MyTask) throws {
         var tasks = try awaitSafeGetProtectedTasks()
         
         if let index = tasks.firstIndex(where: { $0.id == task.id }) {
             tasks[index] = task
-            print("✅ Updated existing task: \(task.name)")
+            print("Updated existing task: \(task.name)")
         } else {
             tasks.append(task)
-            print("🆕 Added new task: \(task.name)")
+            print("Added new task: \(task.name)")
         }
         
         try saveTasksToKeychain(tasks)

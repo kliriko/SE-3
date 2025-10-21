@@ -46,7 +46,7 @@ struct NewTaskView: View {
                     Task {
                         await viewModel.updateTasks()
                     }
-                    viewModel.notificationCenter.scheduleLocalNotification(title: taskName, body: "Your task is due soon", date: date ?? Date())
+                    viewModel.notificationManager.scheduleLocalNotification(title: taskName, body: "Your task is due soon", date: date ?? Date())
                     viewModel.presentTaskPopup = false
                 }
                 .frame(maxWidth: .infinity)

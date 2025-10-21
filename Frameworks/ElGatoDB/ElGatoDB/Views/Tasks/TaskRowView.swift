@@ -44,30 +44,14 @@ struct TaskRowView: View {
                     .background(Capsule().fill(.blue))
             }
             
-            Toggle(isOn: $task.notify) { }
-            .onChange(of: task.notify) { _, newValue in
-                guard viewModel.tasks.contains(where: { $0.id == task.id }) else { return }
-                
-                do {
-                    try viewModel.dataManager.updateTask(task.name, key: "notify", value: newValue)
-                    
-                    DispatchQueue.main.async {
-                        if newValue {
-                            viewModel.notificationCenter.cancelNotification(taskName: task.name)
-                            viewModel.notificationCenter.scheduleLocalNotification(
-                                title: task.name,
-                                body: "Task is due soon!",
-                                date: task.date ?? Date()
-                            )
-                        } else {
-                            viewModel.notificationCenter.cancelNotification(taskName: task.name)
-                        }
-                    }
-                } catch {
-                    print("Failed to toggle notify: \(error)")
-                }
+            Button(action: {
+                viewModel.toggleNotification(task: $task)
+            }) {
+                Image(systemName: task.notify ? "bell.fill" : "bell.slash")
+                    .foregroundColor(task.notify ? .yellow : .gray)
+                    .font(.system(size: 20))
             }
-            
+            .buttonStyle(.plain)
         }
         .swipeActions(edge: .trailing){
             Button(action: {

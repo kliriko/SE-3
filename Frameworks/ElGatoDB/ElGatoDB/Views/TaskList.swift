@@ -43,7 +43,7 @@ struct TaskList: View {
             
             ToolbarItem(placement: .navigationBarLeading) {
                 Button(action: {
-                    viewModel.notificationCenter.listPendingNotifications()
+                    viewModel.notificationManager.listPendingNotifications()
                 }, label: {
                     Image(systemName: "printer.filled.and.paper")
                 })

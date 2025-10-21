@@ -13,6 +13,8 @@ struct SecureTaskRowView: View {
     
     var body: some View {
         HStack {
+            Image(systemName: "shield")
+                
             Button(action: {
                 task.isDone.toggle()
                 do {
@@ -46,38 +48,20 @@ struct SecureTaskRowView: View {
                     .background(Capsule().fill(.blue))
             }
 
-            Toggle(isOn: $task.notify) { }
-                .onChange(of: task.notify) { _, newValue in
-                    Task {
-                        var updatedTask = task
-                        updatedTask.notify = newValue
-                        
-                        do {
-                            try viewModel.authManager.addProtectedTask(updatedTask)
-                            
-                            DispatchQueue.main.async {
-                                if newValue {
-                                    viewModel.notificationCenter.cancelNotification(taskName: task.name)
-                                    viewModel.notificationCenter.scheduleLocalNotification(
-                                        title: task.name,
-                                        body: "Task is due soon!",
-                                        date: task.date ?? Date()
-                                    )
-                                } else {
-                                    viewModel.notificationCenter.cancelNotification(taskName: task.name)
-                                }
-                            }
-                        } catch {
-                            print("Failed to toggle notify:", error)
-                        }
-                    }
-                }
+            Button(action: {
+                viewModel.toggleNotificationProtected(task: $task)
+            }) {
+                Image(systemName: task.notify ? "bell.fill" : "bell.slash")
+                    .foregroundColor(task.notify ? .yellow : .gray)
+                    .font(.system(size: 20))
+            }
+            .buttonStyle(.plain)
         }
         .swipeActions(edge: .trailing) {
             Button(role: .destructive) {
                 do {
                     try viewModel.authManager.deleteProtectedTask(id: task.id)
-                    print("🗑️ Deleted secure task:", task.name)
+                    print("Deleted secure task:", task.name)
                     Task { await viewModel.updateTasks() }
                 } catch {
                     print("Failed to delete secure task:", error)

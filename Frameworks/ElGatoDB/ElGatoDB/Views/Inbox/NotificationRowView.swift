@@ -22,7 +22,7 @@ struct NotificationRowView: View {
                     inboxViewModel.fetchNotifications()
                     
                     try! taskViewModel.dataManager.createTask(message.task.name, dueDate: message.task.date)
-                    taskViewModel.notificationCenter.scheduleLocalNotification(title: message.task.name, body: "", date: message.task.date!)
+                    taskViewModel.notificationManager.scheduleLocalNotification(title: message.task.name, body: "", date: message.task.date!)
                     Task {
                         await taskViewModel.updateTasks()
                     }
