@@ -8,10 +8,14 @@
 
 /* Begin PBXBuildFile section */
 		57F9ADDD2E91398600305E48 /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 57F9ADDC2E91398600305E48 /* RealmSwift */; };
+		EB59573EA17BA611C64C62B7 /* Pods_ElGatoDB.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C311188CBDA85F7F8269D50C /* Pods_ElGatoDB.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		577642002E8D0E6E00E41BAB /* ElGatoDB.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ElGatoDB.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		71B236809B1BF9519D93FE64 /* Pods-ElGatoDB.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ElGatoDB.release.xcconfig"; path = "Target Support Files/Pods-ElGatoDB/Pods-ElGatoDB.release.xcconfig"; sourceTree = "<group>"; };
+		C311188CBDA85F7F8269D50C /* Pods_ElGatoDB.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_ElGatoDB.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		D95E315B60A7B9CD337EEF76 /* Pods-ElGatoDB.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ElGatoDB.debug.xcconfig"; path = "Target Support Files/Pods-ElGatoDB/Pods-ElGatoDB.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -41,17 +45,28 @@
 			buildActionMask = 2147483647;
 			files = (
 				57F9ADDD2E91398600305E48 /* RealmSwift in Frameworks */,
+				EB59573EA17BA611C64C62B7 /* Pods_ElGatoDB.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		14A8DE2F87A9F5C3F2BBA10C /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				C311188CBDA85F7F8269D50C /* Pods_ElGatoDB.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		577641F72E8D0E6E00E41BAB = {
 			isa = PBXGroup;
 			children = (
 				577642022E8D0E6E00E41BAB /* ElGatoDB */,
 				577642012E8D0E6E00E41BAB /* Products */,
+				E323288E13B91B776602A94C /* Pods */,
+				14A8DE2F87A9F5C3F2BBA10C /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -63,6 +78,15 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		E323288E13B91B776602A94C /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				D95E315B60A7B9CD337EEF76 /* Pods-ElGatoDB.debug.xcconfig */,
+				71B236809B1BF9519D93FE64 /* Pods-ElGatoDB.release.xcconfig */,
+			);
+			path = Pods;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -70,9 +94,11 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 577642102E8D0E6F00E41BAB /* Build configuration list for PBXNativeTarget "ElGatoDB" */;
 			buildPhases = (
+				755AA447D124FB9AC8E0076D /* [CP] Check Pods Manifest.lock */,
 				577641FC2E8D0E6E00E41BAB /* Sources */,
 				577641FD2E8D0E6E00E41BAB /* Frameworks */,
 				577641FE2E8D0E6E00E41BAB /* Resources */,
+				77622475CAA4068C3E7CBF04 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -135,6 +161,52 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		755AA447D124FB9AC8E0076D /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-ElGatoDB-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		77622475CAA4068C3E7CBF04 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-ElGatoDB/Pods-ElGatoDB-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			inputPaths = (
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-ElGatoDB/Pods-ElGatoDB-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-ElGatoDB/Pods-ElGatoDB-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		577641FC2E8D0E6E00E41BAB /* Sources */ = {
@@ -270,6 +342,7 @@
 		};
 		577642112E8D0E6F00E41BAB /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = D95E315B60A7B9CD337EEF76 /* Pods-ElGatoDB.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -303,6 +376,7 @@
 		};
 		577642122E8D0E6F00E41BAB /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 71B236809B1BF9519D93FE64 /* Pods-ElGatoDB.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;

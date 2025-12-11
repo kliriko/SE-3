@@ -1,0 +1,22 @@
+PODS:
+  - QKnobs (0.0.1)
+
+DEPENDENCIES:
+  - QKnobs (from `https://github.com/kliriko/QKnobs.git`, tag `0.0.2`)
+
+EXTERNAL SOURCES:
+  QKnobs:
+    :git: https://github.com/kliriko/QKnobs.git
+    :tag: 0.0.2
+
+CHECKOUT OPTIONS:
+  QKnobs:
+    :git: https://github.com/kliriko/QKnobs.git
+    :tag: 0.0.2
+
+SPEC CHECKSUMS:
+  QKnobs: 90e9209b5853274e71bbfedfb15679f5e5fd9ee7
+
+PODFILE CHECKSUM: 69a2a1f2a24841fa3d455d3c30168d88eb388684
+
+COCOAPODS: 1.16.2

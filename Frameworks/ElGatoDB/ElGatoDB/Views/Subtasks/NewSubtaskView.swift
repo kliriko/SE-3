@@ -5,6 +5,7 @@
 //  Created by Володимир on 06.10.2025.
 //
 import SwiftUI
+import QKnobs
 
 struct NewSubtaskView: View {
     @ObservedObject var viewModel: TaskListViewModel

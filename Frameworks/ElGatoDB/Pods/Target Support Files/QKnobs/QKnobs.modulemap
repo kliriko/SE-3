@@ -1,0 +1,6 @@
+framework module QKnobs {
+  umbrella header "QKnobs-umbrella.h"
+
+  export *
+  module * { export * }
+}
