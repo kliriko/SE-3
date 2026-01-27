@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <title>Demo WebWorker</title>
+</head>
+<body>
+
+<button id="startBtn">Запустити Worker</button>
+<br><br>
+
+<button id="testBtn">Перевірка інтерфейсу</button>
+<br><br>
+
+<b>Лічильник:</b>
+<div id="counter">0</div>
+<br>
+
+<button id="stopBtn">Зупинити Worker</button>
+
+<script>
+    "use strict";
+
+    let worker = null;
+
+    const counterDiv = document.getElementById("counter");
+
+    document.getElementById("startBtn").onclick = () => {
+        if (worker !== null) return;
+
+        worker = new Worker("worker.js");
+
+        worker.onmessage = (e) => {
+            counterDiv.textContent = e.data;
+        };
+    };
+
+    document.getElementById("stopBtn").onclick = () => {
+        if (worker !== null) {
+            worker.terminate();
+            worker = null;
+        }
+    };
+
+    document.getElementById("testBtn").onclick = () => {
+        alert("Інтерфейс працює, головний потік не заблокований.");
+    };
+</script>
+
+</body>
+</html>
