@@ -5,6 +5,7 @@
 //  Created by Володимир on 06.10.2025.
 //
 import SwiftUI
+import Combine
 
 struct NewSubtaskView: View {
     @ObservedObject var viewModel: TaskListViewModel
@@ -21,22 +22,13 @@ struct NewSubtaskView: View {
             TextField("Enter subtask name", text: $taskName)
                 .textFieldStyle(RoundedBorderTextFieldStyle())
             
-            Button("Add subtask") {
-                Task {
-                    try viewModel.dataManager.createSubtask(taskName, in: parentTaskName)
-                    await viewModel.updateTasks()
-                }
-                
-                viewModel.presentSubtaskPopup = false
-                viewModel.lastTaskName = ""
-            }
+            Button("Add subtask") { Task { await viewModel.createSubtask(name: taskName, in: parentTaskName) } }
             .frame(maxWidth: .infinity)
             .padding()
             .background(Color.blue)
             .foregroundColor(.white)
             .clipShape(RoundedRectangle(cornerRadius: 10))
             .fontWeight(.bold)
-            
         }
         .padding()
     }

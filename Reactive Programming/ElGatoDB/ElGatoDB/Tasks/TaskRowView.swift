@@ -6,23 +6,16 @@
 //
 
 import SwiftUI
+import Combine
 
 struct TaskRowView: View {
     var viewModel: TaskListViewModel
-    @State var task: MyTask
+    @Binding var task: MyTask
     
     var body: some View {
         HStack {
             Button(action: {
-                do {
-                    try viewModel.dataManager.updateTask(task.name, key: "isDone", value: !task.isDone)
-                    task.isDone.toggle()
-                    Task {
-                        await viewModel.updateTasks()
-                    }
-                } catch {
-                    print("Failed to toggle isDone: \(error)")
-                }
+                viewModel.taskToggleSubject.send(task)
             }) {
                 if task.isDone {
                     Text(task.name)
@@ -46,15 +39,7 @@ struct TaskRowView: View {
         }
         .swipeActions(edge: .trailing){
             Button(action: {
-                do {
-                    try viewModel.dataManager.deleteTask(task.name)
-                    Task {
-                        await viewModel.updateTasks()
-                    }
-                }
-                catch {
-                    print("failed to delete task")
-                }
+                viewModel.taskDeleteSubject.send(task.name)
             }, label: {
                 Text("Delete")
             })
@@ -73,5 +58,5 @@ struct TaskRowView: View {
 }
 
 #Preview {
-    TaskRowView(viewModel: TaskListViewModel(usingRealm: false), task: MyTask())
+    TaskRowView(viewModel: TaskListViewModel(), task: .constant(MyTask(name: "Sample Task", dueDate: Date())))
 }

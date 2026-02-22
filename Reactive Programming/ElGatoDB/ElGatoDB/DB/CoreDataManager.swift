@@ -6,12 +6,29 @@
 //
 
 import CoreData
+import Combine
 
 class CoreDataManager: DrumNDataBase {
     let context: NSManagedObjectContext
     
+    private let tasksSubject = CurrentValueSubject<[MyTask], Never>([])
+    var tasksPublisher: AnyPublisher<[MyTask], Never> {
+        tasksSubject.eraseToAnyPublisher()
+    }
+    
+    private var cancellables = Set<AnyCancellable>()
+    
     init(_ context: NSManagedObjectContext) {
         self.context = context
+        let tasks = getAllTasks()
+        tasksSubject.send(tasks)
+    }
+    
+    deinit { cancellables.removeAll() }
+    
+    private func handleContextChange() {
+        let tasks = getAllTasks()
+        tasksSubject.send(tasks)
     }
     
     func taskExists(_ name: String) -> Bool {
@@ -47,7 +64,10 @@ class CoreDataManager: DrumNDataBase {
             task.dueDate = dueDate
             task.notify = true
             
-            do { try context.save() } catch { throw error }
+            do { 
+                try context.save()
+                handleContextChange()
+            } catch { throw error }
         }
     }
         
@@ -72,6 +92,7 @@ class CoreDataManager: DrumNDataBase {
         }
         taskObject.setValue(value, forKey: key)
         try context.save()
+        handleContextChange()
     }
     
     func deleteTask(_ name: String) throws {
@@ -82,6 +103,8 @@ class CoreDataManager: DrumNDataBase {
         }
         
         context.delete(taskObject)
+        try context.save()
+        handleContextChange()
     }
     
     func createSubtask(_ name: String, in taskName: String) throws {
@@ -101,6 +124,7 @@ class CoreDataManager: DrumNDataBase {
                 parentTask?.addToSubTasks(subtask)
                 
                 try! context.save()
+                handleContextChange()
                 
             } catch {
                 throw DrumNDataBaseError.TaskNotFound(name: taskName)
@@ -141,6 +165,7 @@ class CoreDataManager: DrumNDataBase {
         }
         subtask.setValue(value, forKey: key)
         try context.save()
+        handleContextChange()
     }
     
     func deleteSubtask(_ name: String, in taskName: String) throws {
@@ -157,6 +182,11 @@ class CoreDataManager: DrumNDataBase {
         }
         parentTask.removeFromSubTasks(subtask)
         context.delete(subtask)
-        do { try context.save()} catch { throw DrumNDataBaseError.FailedToDelete(name: name) }
+        do { 
+            try context.save()
+            handleContextChange()
+        } catch { 
+            throw DrumNDataBaseError.FailedToDelete(name: name) 
+        }
     }
 }

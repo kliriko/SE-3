@@ -17,7 +17,7 @@ struct TaskList: View {
             VStack{
                 List {
                     ForEach($viewModel.tasks.sorted(by: {$0.name.wrappedValue < $1.name.wrappedValue})) { $task in
-                        TaskRowView(viewModel: viewModel, task: task)
+                        TaskRowView(viewModel: viewModel, task: $task)
                         ForEach(task.subTasks) { subtask in
                             SubtaskRowView(viewModel: viewModel, subtask: subtask, task: $task)
                         }
@@ -26,20 +26,11 @@ struct TaskList: View {
             }
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button(action: {
-                        viewModel.presentTaskPopup = true
-                    }) {
-                        Image(systemName: "plus")
-                    }
+                    Button(action: { viewModel.presentTaskPopup = true}) { Image(systemName: "plus") }
                 }
             }
             .navigationTitle("Todo pro max")
-            .onAppear {
-                viewModel.initContext(context: managedObjectContext)
-                Task {
-                    await viewModel.updateTasks()
-                }
-            }
+            .onAppear { viewModel.initContext(context: managedObjectContext) }
             .sheet(isPresented: $viewModel.presentTaskPopup){
                 NewTaskView(viewModel: viewModel)
                     .presentationDetents([.fraction(0.25)])

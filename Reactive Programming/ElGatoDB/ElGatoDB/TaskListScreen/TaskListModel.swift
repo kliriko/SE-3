@@ -25,9 +25,7 @@ struct MyTask: Identifiable, Codable {
         
         if let subTaskEntities = task.subTasks?.allObjects as? [TodoSubtask] {
             subTasks = subTaskEntities.map { SubTask(name: $0.name, isDone: $0.isDone) }
-        } else {
-            throw NSError(domain: "Failed to convert subTasks", code: 69, userInfo: nil)
-        }
+        } else { throw NSError(domain: "Failed to convert subTasks", code: 69, userInfo: nil) }
     }
     
     init(notification: MyNotification) {
@@ -41,8 +39,6 @@ struct MyTask: Identifiable, Codable {
         self.name = name
         self.date = dueDate
     }
-    
-    init() {}
 }
 
 struct SubTask: Hashable, Identifiable, Codable {

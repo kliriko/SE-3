@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import Combine
 
 struct NewTaskView: View {
     @ObservedObject var viewModel: TaskListViewModel
@@ -32,17 +33,7 @@ struct NewTaskView: View {
             
             HStack {
                 Button("Add task") {
-                    do {
-                        try viewModel.dataManager.createTask(taskName, dueDate: date)
-                    } catch {
-                        print("Failed to add new task")
-                    }
-                    
-                    Task {
-                        await viewModel.updateTasks()
-                    }
-                    viewModel.notificationManager.scheduleLocalNotification(title: taskName, body: "Your task is due soon", date: date ?? Date())
-                    viewModel.presentTaskPopup = false
+                    viewModel.taskCreateSubject.send((name: taskName, dueDate: date))
                 }
                 .frame(maxWidth: .infinity)
                 .padding()
@@ -63,5 +54,5 @@ struct NewTaskView: View {
 }
 
 #Preview {
-    NewTaskView(viewModel: TaskListViewModel(usingRealm: false))
+    NewTaskView(viewModel: TaskListViewModel())
 }

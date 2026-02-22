@@ -10,25 +10,12 @@ import CoreData
 
 struct ContentView: View {
     @Environment(\.managedObjectContext) var managedObjectContext
-    @StateObject var taskListViewModel: TaskListViewModel = TaskListViewModel(usingRealm: false)
-    @StateObject var inboxViewModel: InboxViewModel = InboxViewModel()
+    @StateObject var taskListViewModel: TaskListViewModel = TaskListViewModel()
     
     var body: some View {
             TabView {
-                NavigationView {
-                    TaskList(viewModel: taskListViewModel)
-                }
-                .tabItem {
-                    Label("Tasks", systemImage: "list.number")
-                }
-                
-                InboxView(inboxViewModel: inboxViewModel, taskViewModel: taskListViewModel)
-                    .tabItem {
-                        Label("Inbox", systemImage: "tray")
-                    }
-            }
-            .onAppear {
-                inboxViewModel.initContext(context: managedObjectContext)
+                NavigationView { TaskList(viewModel: taskListViewModel) }
+                .tabItem { Label("Tasks", systemImage: "list.number") }
             }
     }
 }
