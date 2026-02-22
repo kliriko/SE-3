@@ -25,6 +25,10 @@ class TaskListViewModel: ObservableObject {
     let taskDeleteSubject = PassthroughSubject<String, Never>()
     let taskCreateSubject = PassthroughSubject<(name: String, dueDate: Date?), Never>()
     
+    let subtaskToggleSubject = PassthroughSubject<(subtask: SubTask, in: MyTask), Never>()
+    let subtaskDeleteSubject = PassthroughSubject<(name: String, in: String), Never>()
+    let subtaskCreateSubject = PassthroughSubject<(name: String, in: String), Never>()
+    
     private var cancellables = Set<AnyCancellable>()
     
     init() {
@@ -33,6 +37,7 @@ class TaskListViewModel: ObservableObject {
     
     func initContext(context: NSManagedObjectContext) {
         dataManager = CoreDataManager(context)
+        tasks = dataManager.getAllTasks()
         setupBindings()
     }
     
@@ -42,15 +47,18 @@ class TaskListViewModel: ObservableObject {
             .assign(to: &$tasks)
         
         taskToggleSubject
-            .sink { [weak self] task in Task { await self?.toggleTaskIsDone(task) } }
+            .sink { [weak self] task in
+                Task {
+                    do { try self?.dataManager.updateTask(task.name, key: "isDone", value: !task.isDone) } catch {
+                        print("Failed to update isDone for task \(task.name): \(error)")
+                    }
+                }
+            }
             .store(in: &cancellables)
         
         taskDeleteSubject
             .sink { [weak self] taskName in
-                guard let self = self else { return }
-                do {
-                    try self.dataManager.deleteTask(taskName)
-                } catch {
+                do { try self?.dataManager.deleteTask(taskName) } catch {
                     print("Failed to delete task \(taskName): \(error)")
                 }
             }
@@ -58,37 +66,38 @@ class TaskListViewModel: ObservableObject {
         
         taskCreateSubject
             .sink { [weak self] taskInfo in
-                guard let self = self else { return }
-                do {
-                    try self.dataManager.createTask(taskInfo.name, dueDate: taskInfo.dueDate)
-                } catch {
+                do {  try self?.dataManager.createTask(taskInfo.name, dueDate: taskInfo.dueDate) } catch {
                     print("Failed to create task \(taskInfo.name): \(error)")
                 }
             }
             .store(in: &cancellables)
         
-        tasks = dataManager.getAllTasks()
-    }
-    
-    func toggleTaskIsDone(_ task: MyTask) async {
-        do { try dataManager.updateTask(task.name, key: "isDone", value: !task.isDone) } catch {
-            print("Failed to update isDone for task \(task.name): \(error)")
-        }
-    }
-    
-    func toggleSubtaskIsDone(_ subtask: SubTask, in parentTask: MyTask) async {
-        do {
-            try dataManager.updateSubtask(subtask.name, in: parentTask.name, key: "isDone", value: !subtask.isDone)
-        } catch {
-            print("Failed to update isDone for subtask \(subtask.name) in \(parentTask.name): \(error)")
-        }
-    }
-    
-    func createSubtask(name: String, in parentTaskName: String) async {
-        do {
-            try dataManager.createSubtask(name, in: parentTaskName)
-        } catch {
-            print("Failed to create subtask \(name) in \(parentTaskName): \(error)")
-        }
+        subtaskToggleSubject
+            .sink { [weak self] info in
+                Task {
+                    do { try self?.dataManager.updateSubtask(info.subtask.name, in: info.in.name, key: "isDone", value: !info.subtask.isDone) } catch {
+                        print("Failed to update isDone for subtask \(info.subtask.name) in \(info.in.name): \(error)")
+                    }
+                }
+            }
+            .store(in: &cancellables)
+        
+        subtaskDeleteSubject
+            .sink { [weak self] info in
+                do { try self?.dataManager.deleteSubtask(info.name, in: info.name) } catch {
+                    print("Failed to delete subtask \(info.name) in \(info.in): \(error)")
+                }
+            }
+            .store(in: &cancellables)
+        
+        subtaskCreateSubject
+            .sink { [weak self] info in
+                Task {
+                    do { try self?.dataManager.createSubtask(info.name, in: info.in) } catch {
+                        print("Failed to create subtask \(info.name) in \(info.in): \(error)")
+                    }
+                }
+            }
+            .store(in: &cancellables)
     }
 }

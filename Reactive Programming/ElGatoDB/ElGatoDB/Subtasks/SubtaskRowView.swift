@@ -16,7 +16,7 @@ struct SubtaskRowView: View {
     var body: some View {
         HStack {
             Button(action: {
-                Task { await viewModel.toggleSubtaskIsDone(subtask, in: task) }
+                Task { viewModel.subtaskToggleSubject.send((subtask, in: task)) }
             }) {
                 if subtask.isDone {
                     Text("      -" + subtask.name)

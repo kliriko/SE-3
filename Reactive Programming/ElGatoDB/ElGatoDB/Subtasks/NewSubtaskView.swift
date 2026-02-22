@@ -22,7 +22,7 @@ struct NewSubtaskView: View {
             TextField("Enter subtask name", text: $taskName)
                 .textFieldStyle(RoundedBorderTextFieldStyle())
             
-            Button("Add subtask") { Task { await viewModel.createSubtask(name: taskName, in: parentTaskName) } }
+            Button("Add subtask") { Task { await viewModel.subtaskCreateSubject.send((name: taskName, in: parentTaskName)) } }
             .frame(maxWidth: .infinity)
             .padding()
             .background(Color.blue)
