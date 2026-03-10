@@ -22,9 +22,7 @@ struct TaskList: View {
                         .glassEffect(.regular)
                         
                     
-                    ForEach($viewModel
-                        .filteredTasks
-                        .sorted(by: {$0.name.wrappedValue < $1.name.wrappedValue})) { $task in
+                    ForEach($viewModel.filteredTasks) { $task in
                         TaskRowView(viewModel: viewModel, task: $task)
                         }
                 }
@@ -32,6 +30,22 @@ struct TaskList: View {
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button(action: { viewModel.presentTaskPopup = true}) { Image(systemName: "plus") }
+                }
+                
+                ToolbarItem(placement: .topBarLeading) {
+                    Menu {
+                        Button(action: { sortByDefault() }) {
+                            Label("Default", systemImage: viewModel.sortType == .byDefault ? "checkmark" : "")
+                        }
+                        Button(action: { sortByPriority() }) {
+                            Label("Priority", systemImage: viewModel.sortType == .byPriority ? "checkmark" : "")
+                        }
+                        Button(action: { sortByDate() }) {
+                            Label("Date", systemImage: viewModel.sortType == .byDate ? "checkmark" : "")
+                        }
+                    } label: {
+                        Label(viewModel.sortType.label, systemImage: "arrow.up.arrow.down")
+                    }
                 }
             }
             .navigationTitle("Todo pro max")
@@ -41,6 +55,18 @@ struct TaskList: View {
                     .presentationDetents([.fraction(0.35)])
             }
         }
+    }
+    
+    func sortByPriority() {
+        viewModel.sortType = .byPriority
+    }
+    
+    func sortByDate() {
+        viewModel.sortType = .byDate
+    }
+    
+    func sortByDefault() {
+        viewModel.sortType = .byDefault
     }
 }
 
@@ -61,7 +87,7 @@ struct TaskList: View {
         task.priority = priority
     }
     try? context.save()
-
     return TaskList(viewModel: TaskListViewModel())
         .environment(\.managedObjectContext, context)
 }
+

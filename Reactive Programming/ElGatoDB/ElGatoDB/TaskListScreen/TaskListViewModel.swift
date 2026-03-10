@@ -16,6 +16,7 @@ class TaskListViewModel: ObservableObject {
     @Published var presentTaskPopup: Bool = false
     @Published var verified: Bool = false
     @Published var inputFieldText = ""
+    @Published var sortType: SortType = .byDefault
     
     var dataManager: CoreDataManager!
     
@@ -46,37 +47,57 @@ class TaskListViewModel: ObservableObject {
         
         $inputFieldText
             .debounce(for: .milliseconds(300), scheduler: DispatchQueue.main)
-            .combineLatest($tasks)
-            .map { query, tasks in
-                guard !query.isEmpty else { return tasks }
-                return tasks.filter { $0.name.localizedCaseInsensitiveContains(query) }
+            .combineLatest($tasks, $sortType)
+            .map { [unowned self] query, tasks, sortType in
+                self.sorted(self.filtered(tasks, by: query), by: sortType)
             }
             .assign(to: &$filteredTasks)
         
         taskToggleSubject
             .sink { [weak self] task in
-                Task {
-                    do { try self?.dataManager.updateTask(task.name, key: "isDone", value: !task.isDone) } catch {
-                        print("Failed to update isDone for task \(task.name): \(error)")
-                    }
-                }
+                try? self?.dataManager.updateTask(task.name, key: "isDone", value: !task.isDone)
             }
             .store(in: &cancellables)
         
         taskDeleteSubject
             .sink { [weak self] taskName in
-                do { try self?.dataManager.deleteTask(taskName) } catch {
-                    print("Failed to delete task \(taskName): \(error)")
-                }
+                try? self?.dataManager.deleteTask(taskName)
             }
             .store(in: &cancellables)
         
         taskCreateSubject
             .sink { [weak self] taskInfo in
-                do {  try self?.dataManager.createTask(taskInfo.name, dueDate: taskInfo.dueDate, priority: taskInfo.priority) } catch {
-                    print("Failed to create task \(taskInfo.name): \(error)")
-                }
+                try? self?.dataManager.createTask(taskInfo.name, dueDate: taskInfo.dueDate, priority: taskInfo.priority)
             }
             .store(in: &cancellables)
+    }
+    
+    private func filtered(_ tasks: [MyTask], by query: String) -> [MyTask] {
+        guard !query.isEmpty else { return tasks }
+        return tasks.filter { $0.name.localizedCaseInsensitiveContains(query) }
+    }
+    
+    private func sorted(_ tasks: [MyTask], by sortType: SortType) -> [MyTask] {
+        switch sortType {
+        case .byDefault:
+            return tasks.sorted { lhs, rhs in
+                let criteria: [(lhs: Int, rhs: Int)] = [
+                    (lhs.isDone ? 1 : 0, rhs.isDone ? 1 : 0),
+                    (lhs.priority.sortOrder, rhs.priority.sortOrder),
+                    (Int((lhs.date ?? .distantFuture).timeIntervalSince1970),
+                     Int((rhs.date ?? .distantFuture).timeIntervalSince1970)),
+                    (0, lhs.name.localizedCompare(rhs.name) == .orderedAscending ? 1 : 0)
+                ]
+                for (lhsCriteria, rhsCriteria) in criteria {
+                    if lhsCriteria == rhsCriteria { continue }
+                    return lhsCriteria < rhsCriteria
+                }
+                return false
+            }
+        case .byPriority:
+            return tasks.sorted { $0.priority.sortOrder < $1.priority.sortOrder }
+        case .byDate:
+            return tasks.sorted { ($0.date ?? .distantFuture) < ($1.date ?? .distantFuture) }
+        }
     }
 }

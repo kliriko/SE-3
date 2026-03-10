@@ -26,6 +26,28 @@ enum TaskPriority: String, Codable, CaseIterable {
         case .high: "red"
         }
     }
+
+    var sortOrder: Int {
+        switch self {
+        case .high: 0
+        case .medium: 1
+        case .low: 2
+        }
+    }
+}
+
+enum SortType {
+    case byDefault
+    case byPriority
+    case byDate
+
+    var label: String {
+        switch self {
+        case .byDefault: "Default"
+        case .byPriority: "Priority"
+        case .byDate: "Date"
+        }
+    }
 }
 
 struct MyTask: Identifiable, Codable {
@@ -34,8 +56,6 @@ struct MyTask: Identifiable, Codable {
     var date: Date? = nil
     var id: String { name }
     var priority: TaskPriority = .medium
-    var notificationEnabled: Bool = true
-    var notify: Bool = true
     
     init(_ task: TodoTask) throws {
         self.name = task.name
