@@ -12,8 +12,20 @@ struct TaskRowView: View {
     var viewModel: TaskListViewModel
     @Binding var task: MyTask
     
+    private var priorityColor: Color {
+        switch task.priority {
+        case .low: .green
+        case .medium: .orange
+        case .high: .red
+        }
+    }
+
     var body: some View {
         HStack {
+            Circle()
+                .fill(priorityColor)
+                .frame(width: 10, height: 10)
+
             Button(action: {
                 viewModel.taskToggleSubject.send(task)
             }) {
@@ -44,15 +56,6 @@ struct TaskRowView: View {
                 Text("Delete")
             })
             .tint(.red)
-        }
-        .swipeActions(edge: .leading){
-            Button(action: {
-                viewModel.presentSubtaskPopup = true
-                viewModel.lastTaskName = task.name
-            }, label: {
-                Text("Subtask")
-            })
-            .tint(.green)
         }
     }
 }

@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import CoreData
 
 struct TaskList: View {
     @Environment(\.managedObjectContext) var managedObjectContext
@@ -18,9 +19,6 @@ struct TaskList: View {
                 List {
                     ForEach($viewModel.tasks.sorted(by: {$0.name.wrappedValue < $1.name.wrappedValue})) { $task in
                         TaskRowView(viewModel: viewModel, task: $task)
-                        ForEach(task.subTasks) { subtask in
-                            SubtaskRowView(viewModel: viewModel, subtask: subtask, task: $task)
-                        }
                     }
                 }
             }
@@ -33,12 +31,30 @@ struct TaskList: View {
             .onAppear { viewModel.initContext(context: managedObjectContext) }
             .sheet(isPresented: $viewModel.presentTaskPopup){
                 NewTaskView(viewModel: viewModel)
-                    .presentationDetents([.fraction(0.25)])
-            }
-            .sheet(isPresented: $viewModel.presentSubtaskPopup){
-                NewSubtaskView(viewModel: viewModel, parentTaskName: viewModel.lastTaskName)
-                    .presentationDetents([.fraction(0.25)])
+                    .presentationDetents([.fraction(0.35)])
             }
         }
     }
+}
+
+#Preview {
+    let controller = PersistenceController(inMemory: true)
+    let context = controller.container.viewContext
+
+    let sampleTasks: [(String, Date?, Bool, String)] = [
+        ("Buy groceries", .now.addingTimeInterval(3600), false, "high"),
+        ("Walk the cat", .now.addingTimeInterval(7200), false, "low"),
+        ("Finish homework", nil, true, "medium"),
+    ]
+    for (name, date, done, priority) in sampleTasks {
+        let task = TodoTask(context: context)
+        task.name = name
+        task.dueDate = date
+        task.isDone = done
+        task.priority = priority
+    }
+    try? context.save()
+
+    return TaskList(viewModel: TaskListViewModel())
+        .environment(\.managedObjectContext, context)
 }

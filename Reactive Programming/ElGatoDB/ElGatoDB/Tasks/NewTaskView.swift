@@ -12,6 +12,7 @@ struct NewTaskView: View {
     @ObservedObject var viewModel: TaskListViewModel
     @State var taskName : String = ""
     @State private var date: Date? = nil
+    @State private var priority: TaskPriority = .medium
     
     private var dateForPicker: Binding<Date> {
         Binding<Date>(
@@ -33,7 +34,7 @@ struct NewTaskView: View {
             
             HStack {
                 Button("Add task") {
-                    viewModel.taskCreateSubject.send((name: taskName, dueDate: date))
+                    viewModel.taskCreateSubject.send((name: taskName, dueDate: date, priority: priority))
                 }
                 .frame(maxWidth: .infinity)
                 .padding()
@@ -48,6 +49,13 @@ struct NewTaskView: View {
                     selection: dateForPicker,
                     displayedComponents: [.date, .hourAndMinute]
                 )
+            
+            Picker("Priority", selection: $priority) {
+                ForEach(TaskPriority.allCases, id: \.self) { p in
+                    Text(p.label).tag(p)
+                }
+            }
+            .pickerStyle(.segmented)
         }
         .padding()
     }

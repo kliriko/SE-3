@@ -13,9 +13,6 @@ struct ContentView: View {
     @StateObject var taskListViewModel: TaskListViewModel = TaskListViewModel()
     
     var body: some View {
-            TabView {
-                NavigationView { TaskList(viewModel: taskListViewModel) }
-                .tabItem { Label("Tasks", systemImage: "list.number") }
-            }
+        NavigationView { TaskList(viewModel: taskListViewModel) }
     }
 }

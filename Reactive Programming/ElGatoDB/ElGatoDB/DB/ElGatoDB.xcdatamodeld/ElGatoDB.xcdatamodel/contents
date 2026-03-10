@@ -1,21 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="24299" systemVersion="25B5057f" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
-    <entity name="MyNotification" representedClassName="MyNotification" syncable="YES">
-        <attribute name="dueDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
-        <attribute name="status" optional="YES" attributeType="String"/>
-        <attribute name="title" optional="YES" attributeType="String"/>
-    </entity>
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="24512" systemVersion="25D125" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
     <entity name="TodoSubtask" representedClassName="TodoSubtask" syncable="YES">
         <attribute name="isDone" attributeType="Boolean" usesScalarValueType="YES"/>
         <attribute name="name" attributeType="String" defaultValueString="Error"/>
-        <attribute name="notify" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
-        <relationship name="task" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="TodoTask" inverseName="subTasks" inverseEntity="TodoTask"/>
     </entity>
     <entity name="TodoTask" representedClassName="TodoTask" syncable="YES">
         <attribute name="dueDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="isDone" attributeType="Boolean" usesScalarValueType="YES"/>
         <attribute name="name" attributeType="String" defaultValueString="Error"/>
-        <attribute name="notify" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
-        <relationship name="subTasks" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="TodoSubtask" inverseName="task" inverseEntity="TodoSubtask"/>
+        <attribute name="priority" optional="YES" attributeType="String"/>
     </entity>
 </model>
