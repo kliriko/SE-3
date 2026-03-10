@@ -17,9 +17,16 @@ struct TaskList: View {
         NavigationStack {
             VStack{
                 List {
-                    ForEach($viewModel.tasks.sorted(by: {$0.name.wrappedValue < $1.name.wrappedValue})) { $task in
+                    TextField("Type to search", text: $viewModel.inputFieldText)
+                        .padding(15)
+                        .glassEffect(.regular)
+                        
+                    
+                    ForEach($viewModel
+                        .filteredTasks
+                        .sorted(by: {$0.name.wrappedValue < $1.name.wrappedValue})) { $task in
                         TaskRowView(viewModel: viewModel, task: $task)
-                    }
+                        }
                 }
             }
             .toolbar {

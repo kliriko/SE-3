@@ -12,8 +12,10 @@ import SwiftUI
 
 class TaskListViewModel: ObservableObject {
     @Published var tasks: [MyTask] = []
+    @Published var filteredTasks: [MyTask] = []
     @Published var presentTaskPopup: Bool = false
     @Published var verified: Bool = false
+    @Published var inputFieldText = ""
     
     var dataManager: CoreDataManager!
     
@@ -33,6 +35,7 @@ class TaskListViewModel: ObservableObject {
     func initContext(context: NSManagedObjectContext) {
         dataManager = CoreDataManager(context)
         tasks = dataManager.getAllTasks()
+        filteredTasks = tasks
         setupBindings()
     }
     
@@ -40,6 +43,15 @@ class TaskListViewModel: ObservableObject {
         dataManager.tasksPublisher
             .receive(on: DispatchQueue.main)
             .assign(to: &$tasks)
+        
+        $inputFieldText
+            .debounce(for: .milliseconds(300), scheduler: DispatchQueue.main)
+            .combineLatest($tasks)
+            .map { query, tasks in
+                guard !query.isEmpty else { return tasks }
+                return tasks.filter { $0.name.localizedCaseInsensitiveContains(query) }
+            }
+            .assign(to: &$filteredTasks)
         
         taskToggleSubject
             .sink { [weak self] task in
