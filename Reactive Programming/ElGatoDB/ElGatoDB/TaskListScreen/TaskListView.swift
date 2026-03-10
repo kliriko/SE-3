@@ -29,7 +29,7 @@ struct TaskList: View {
             }
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button(action: { viewModel.presentTaskPopup = true}) { Image(systemName: "plus") }
+                    Button(action: { viewModel.presentCreateForm() }) { Image(systemName: "plus") }
                 }
                 
                 ToolbarItem(placement: .topBarLeading) {
@@ -50,9 +50,11 @@ struct TaskList: View {
             }
             .navigationTitle("Todo pro max")
             .onAppear { viewModel.initContext(context: managedObjectContext) }
-            .sheet(isPresented: $viewModel.presentTaskPopup){
-                NewTaskView(viewModel: viewModel)
-                    .presentationDetents([.fraction(0.35)])
+            .sheet(isPresented: viewModel.showFormSheet) {
+                if let formVM = viewModel.makeFormViewModel() {
+                    TaskFormView(viewModel: formVM)
+                        .presentationDetents([.fraction(0.4)])
+                }
             }
         }
     }

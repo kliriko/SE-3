@@ -1,5 +1,5 @@
 //
-//  NewTaskView.swift
+//  TaskFormView.swift
 //  ElGatoDB
 //
 //  Created by Володимир on 03.10.2025.
@@ -7,34 +7,31 @@
 
 import SwiftUI
 import Combine
+import CoreData
 
-struct NewTaskView: View {
-    @ObservedObject var viewModel: TaskListViewModel
-    @State var taskName : String = ""
-    @State private var date: Date? = nil
-    @State private var priority: TaskPriority = .medium
+struct TaskFormView: View {
+    @ObservedObject var viewModel: TaskFormViewModel
+    @Environment(\.dismiss) private var dismiss
     
     private var dateForPicker: Binding<Date> {
         Binding<Date>(
-            get: { date ?? Date() },
-            set: {
-                date = $0
-            }
+            get: { viewModel.date ?? Date() },
+            set: { viewModel.date = $0 }
         )
-    }
-    
-    init(viewModel: TaskListViewModel) {
-        self.viewModel = viewModel
     }
     
     var body: some View {
         VStack {
-            TextField("Enter task name", text: $taskName)
+            Text(viewModel.title)
+                .font(.headline)
+                .padding(.top)
+            
+            TextField("Enter task name", text: $viewModel.taskName)
                 .textFieldStyle(RoundedBorderTextFieldStyle())
             
             HStack {
-                Button("Add task") {
-                    viewModel.taskCreateSubject.send((name: taskName, dueDate: date, priority: priority))
+                Button(viewModel.buttonLabel) {
+                    viewModel.saveSubject.send()
                 }
                 .frame(maxWidth: .infinity)
                 .padding()
@@ -50,7 +47,7 @@ struct NewTaskView: View {
                     displayedComponents: [.date, .hourAndMinute]
                 )
             
-            Picker("Priority", selection: $priority) {
+            Picker("Priority", selection: $viewModel.priority) {
                 ForEach(TaskPriority.allCases, id: \.self) { p in
                     Text(p.label).tag(p)
                 }
@@ -58,9 +55,12 @@ struct NewTaskView: View {
             .pickerStyle(.segmented)
         }
         .padding()
+        .onReceive(viewModel.didSave) { _ in
+            dismiss()
+        }
     }
 }
 
 #Preview {
-    NewTaskView(viewModel: TaskListViewModel())
+    TaskFormView(viewModel: TaskFormViewModel(dataManager: CoreDataManager(PersistenceController(inMemory: true).container.viewContext)))
 }

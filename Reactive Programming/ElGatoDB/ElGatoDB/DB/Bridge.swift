@@ -21,6 +21,8 @@ protocol DrumNDataBase {
     
     func updateTask<rowType> (_ name: String, key: String, value: rowType) throws
     
+    func editTask(oldName: String, name: String, dueDate: Date?, priority: TaskPriority) throws
+    
     func deleteTask (_ name: String) throws
     
     func getAllTasks() -> [MyTask]

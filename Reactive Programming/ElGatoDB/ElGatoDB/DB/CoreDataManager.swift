@@ -86,6 +86,19 @@ class CoreDataManager: DrumNDataBase {
         handleContextChange()
     }
     
+    func editTask(oldName: String, name: String, dueDate: Date?, priority: TaskPriority) throws {
+        let fetchRequest: NSFetchRequest<TodoTask> = TodoTask.fetchRequest()
+        fetchRequest.predicate = NSPredicate(format: "name == %@", oldName)
+        guard let taskObject = try context.fetch(fetchRequest).first else {
+            throw DrumNDataBaseError.TaskNotFound(name: oldName)
+        }
+        taskObject.name = name
+        taskObject.dueDate = dueDate
+        taskObject.priority = priority.rawValue
+        try context.save()
+        handleContextChange()
+    }
+    
     func deleteTask(_ name: String) throws {
         let fetchRequest: NSFetchRequest<TodoTask> = TodoTask.fetchRequest()
         fetchRequest.predicate = NSPredicate(format: "name == %@", name)

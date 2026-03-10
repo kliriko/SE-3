@@ -10,13 +10,29 @@ import Combine
 import CoreData
 import SwiftUI
 
+enum FormState {
+    case none
+    case create
+    case edit(MyTask)
+}
+
 class TaskListViewModel: ObservableObject {
     @Published var tasks: [MyTask] = []
     @Published var filteredTasks: [MyTask] = []
-    @Published var presentTaskPopup: Bool = false
-    @Published var verified: Bool = false
     @Published var inputFieldText = ""
     @Published var sortType: SortType = .byDefault
+    
+    @Published var formState: FormState = .none
+    
+    var showFormSheet: Binding<Bool> {
+        Binding(
+            get: {
+                if case .none = self.formState { return false }
+                return true
+            },
+            set: { if !$0 { self.formState = .none } }
+        )
+    }
     
     var dataManager: CoreDataManager!
     
@@ -25,7 +41,7 @@ class TaskListViewModel: ObservableObject {
     
     let taskToggleSubject = PassthroughSubject<MyTask, Never>()
     let taskDeleteSubject = PassthroughSubject<String, Never>()
-    let taskCreateSubject = PassthroughSubject<(name: String, dueDate: Date?, priority: TaskPriority), Never>()
+    let taskEditSubject = PassthroughSubject<MyTask, Never>()
     
     private var cancellables = Set<AnyCancellable>()
     
@@ -38,6 +54,22 @@ class TaskListViewModel: ObservableObject {
         tasks = dataManager.getAllTasks()
         filteredTasks = tasks
         setupBindings()
+    }
+    
+    func presentCreateForm() {
+        formState = .create
+    }
+    
+    func presentEditForm(for task: MyTask) {
+        formState = .edit(task)
+    }
+    
+    func makeFormViewModel() -> TaskFormViewModel? {
+        switch formState {
+        case .none: return nil
+        case .create: return TaskFormViewModel(dataManager: dataManager)
+        case .edit(let task): return TaskFormViewModel(dataManager: dataManager, task: task)
+        }
     }
     
     private func setupBindings() {
@@ -65,9 +97,9 @@ class TaskListViewModel: ObservableObject {
             }
             .store(in: &cancellables)
         
-        taskCreateSubject
-            .sink { [weak self] taskInfo in
-                try? self?.dataManager.createTask(taskInfo.name, dueDate: taskInfo.dueDate, priority: taskInfo.priority)
+        taskEditSubject
+            .sink { [weak self] task in
+                self?.presentEditForm(for: task)
             }
             .store(in: &cancellables)
     }

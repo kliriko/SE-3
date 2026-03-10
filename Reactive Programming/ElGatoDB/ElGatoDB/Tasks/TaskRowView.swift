@@ -49,13 +49,21 @@ struct TaskRowView: View {
                     .background(Capsule().fill(.blue))
             }
         }
-        .swipeActions(edge: .trailing){
+        .swipeActions(edge: .trailing) {
             Button(action: {
                 viewModel.taskDeleteSubject.send(task.name)
             }, label: {
                 Text("Delete")
             })
             .tint(.red)
+        }
+        .swipeActions(edge: .leading) {
+            Button(action: {
+                viewModel.taskEditSubject.send(task)
+            }, label: {
+                Text("Edit")
+            })
+            .tint(.blue)
         }
     }
 }
