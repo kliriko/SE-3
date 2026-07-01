@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IDOR demo</title>
+  <style>
+    :root {
+      --bg: #f4efe6;
+      --panel: #fffaf2;
+      --ink: #1f1b18;
+      --muted: #6a625d;
+      --line: #d8cdbf;
+      --bad: #9d2f2f;
+      --good: #1c6b47;
+      --accent: #bb5a2a;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Georgia, "Times New Roman", serif;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at top left, rgba(187, 90, 42, 0.18), transparent 28%),
+        linear-gradient(180deg, #f8f3ea 0%, var(--bg) 100%);
+    }
+
+    main {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 24px;
+    }
+
+    h1, h2, h3, p {
+      margin-top: 0;
+    }
+
+    .hero,
+    .card,
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      box-shadow: 0 14px 30px rgba(73, 54, 41, 0.08);
+    }
+
+    .hero {
+      padding: 24px;
+      margin-bottom: 18px;
+    }
+
+    .grid {
+      display: grid;
+      gap: 16px;
+    }
+
+    .auth-grid,
+    .compare-grid,
+    .disciplines {
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    }
+
+    .card,
+    .panel {
+      padding: 18px;
+    }
+
+    .panel.bad {
+      border-color: rgba(157, 47, 47, 0.35);
+    }
+
+    .panel.good {
+      border-color: rgba(28, 107, 71, 0.35);
+    }
+
+    .muted {
+      color: var(--muted);
+    }
+
+    label {
+      display: block;
+      margin-bottom: 10px;
+      font-size: 14px;
+    }
+
+    input {
+      width: 100%;
+      margin-top: 4px;
+      padding: 10px 12px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: #fff;
+      font: inherit;
+    }
+
+    button {
+      border: 0;
+      border-radius: 999px;
+      padding: 10px 14px;
+      font: inherit;
+      cursor: pointer;
+      background: var(--ink);
+      color: #fff;
+      margin-right: 8px;
+      margin-top: 8px;
+    }
+
+    button.secondary {
+      background: #d9cfbf;
+      color: var(--ink);
+    }
+
+    button.bad {
+      background: var(--bad);
+    }
+
+    button.good {
+      background: var(--good);
+    }
+
+    .discipline-card {
+      padding: 16px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.65);
+    }
+
+    .list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .item {
+      border: 1px dashed var(--line);
+      border-radius: 12px;
+      padding: 12px;
+      background: #fff;
+    }
+
+    .code {
+      font-family: "Courier New", monospace;
+      font-size: 13px;
+      word-break: break-all;
+      background: #f6efe5;
+      border-radius: 8px;
+      padding: 8px;
+      margin-top: 8px;
+    }
+
+    .status {
+      margin-bottom: 14px;
+      min-height: 24px;
+      color: var(--accent);
+    }
+
+    .pill {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      background: #efe4d2;
+      margin-bottom: 10px;
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <section class="hero">
+      <h1>Демонстрація IDOR для запису на дисципліну</h1>
+      <p>Є лише два предмети: один відкритий для запису, інший закритий. Через звичайний інтерфейс на закритий предмет записатися не можна.</p>
+      <p class="muted">У незахищеній версії сервер все одно приймає прямий URL із внутрішнім <strong>disciplineId</strong>. У захищеній версії той самий запит блокується.</p>
+    </section>
+
+    <section class="card" style="margin-top: 18px;">
+      <h2>Стан демо</h2>
+      <div id="status" class="status"></div>
+    </section>
+
+    <section class="grid compare-grid" style="margin-top: 18px;">
+      <div class="panel bad">
+        <span class="pill">Незахищена версія</span>
+        <h2>Вразлива до IDOR</h2>
+        <p class="muted">На закритий предмет кнопки звичайного запису немає, але прямий URL усе одно спрацьовує.</p>
+        <div id="vulnerable-disciplines" class="grid disciplines" style="margin-top: 12px;"></div>
+        <button class="secondary" id="refresh-vulnerable">Оновити список записів</button>
+        <div id="vulnerable-enrollments" class="list" style="margin-top: 12px;"></div>
+      </div>
+
+      <div class="panel good">
+        <span class="pill">Захищена версія</span>
+        <h2>Захищена логіка</h2>
+        <p class="muted">Тут той самий прямий URL на закритий предмет повертає помилку, бо сервер перевіряє бізнес-правило.</p>
+        <div id="secure-disciplines" class="grid disciplines" style="margin-top: 12px;"></div>
+        <button class="secondary" id="refresh-secure">Оновити список записів</button>
+        <div id="secure-enrollments" class="list" style="margin-top: 12px;"></div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const statusNode = document.getElementById('status');
+    const vulnerableDisciplinesNode = document.getElementById('vulnerable-disciplines');
+    const secureDisciplinesNode = document.getElementById('secure-disciplines');
+    const vulnerableNode = document.getElementById('vulnerable-enrollments');
+    const secureNode = document.getElementById('secure-enrollments');
+
+    function setStatus(message) {
+      statusNode.textContent = message;
+    }
+
+    async function api(path, options = {}) {
+      const headers = { 'Content-Type': 'application/json', ...(options.headers || {}) };
+      const response = await fetch(path, { ...options, headers });
+      const payload = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        throw new Error(payload.error || 'Request failed');
+      }
+      return payload;
+    }
+
+    function renderDisciplineCards(mode, targetNode, disciplines) {
+      targetNode.innerHTML = '';
+
+      disciplines.forEach((discipline) => {
+        const card = document.createElement('div');
+        card.className = 'discipline-card';
+
+        const directUrl = `/api/${mode}/enroll/${discipline._id}`;
+        const actionButton = discipline.isSelfEnrollmentOpen
+          ? `<button class="${mode === 'vulnerable' ? 'bad' : 'good'}" data-mode="${mode}" data-id="${discipline._id}">Записатися через інтерфейс</button>`
+          : `<button class="${mode === 'vulnerable' ? 'bad' : 'good'}" data-mode="${mode}" data-id="${discipline._id}" data-direct="true">Спробувати через URL</button>`;
+
+        const helperText = discipline.isSelfEnrollmentOpen
+          ? 'Цей предмет відкритий для запису.'
+          : 'Через інтерфейс запис має бути заборонений.';
+
+        card.innerHTML = `
+          <h3>${discipline.title}</h3>
+          <p class="muted">${discipline.code}</p>
+          <p class="muted">${helperText}</p>
+          ${discipline.isSelfEnrollmentOpen ? '' : `<div class="code">POST ${directUrl}</div>`}
+          ${actionButton}
+        `;
+
+        targetNode.appendChild(card);
+      });
+    }
+
+    async function loadDisciplines() {
+      const disciplines = await api('/api/disciplines', { method: 'GET', headers: {} });
+      renderDisciplineCards('vulnerable', vulnerableDisciplinesNode, disciplines);
+      renderDisciplineCards('secure', secureDisciplinesNode, disciplines);
+    }
+
+    async function enroll(mode, disciplineId) {
+      const data = await api(`/api/${mode}/enroll/${disciplineId}`, { method: 'POST' });
+      setStatus(data.message);
+      await Promise.all([loadEnrollments('vulnerable'), loadEnrollments('secure')]);
+    }
+
+    async function removeEnrollment(mode, enrollmentId) {
+      const data = await api(`/api/enrollments/${mode}/${enrollmentId}`, { method: 'DELETE' });
+      setStatus(data.message);
+      await loadEnrollments(mode);
+    }
+
+    function renderEnrollmentList(mode, targetNode, enrollments) {
+      if (!enrollments.length) {
+        targetNode.innerHTML = '<div class="item muted">Поки що немає записів.</div>';
+        return;
+      }
+
+      targetNode.innerHTML = '';
+      enrollments.forEach((enrollment) => {
+        const item = document.createElement('div');
+        item.className = 'item';
+
+        item.innerHTML = `
+          <strong>${enrollment.discipline.title}</strong>
+          <p class="muted">${enrollment.discipline.code}</p>
+          <button class="secondary" data-action="remove-enrollment" data-mode="${mode}" data-id="${enrollment.id}">Очистити з демо</button>
+        `;
+
+        targetNode.appendChild(item);
+      });
+    }
+
+    async function loadEnrollments(mode) {
+      try {
+        const enrollments = await api(`/api/${mode}/enrollments`, { method: 'GET' });
+        renderEnrollmentList(mode, mode === 'vulnerable' ? vulnerableNode : secureNode, enrollments);
+      } catch (error) {
+        setStatus(error.message);
+      }
+    }
+
+    document.getElementById('refresh-vulnerable').addEventListener('click', () => loadEnrollments('vulnerable'));
+    document.getElementById('refresh-secure').addEventListener('click', () => loadEnrollments('secure'));
+
+    async function handleDisciplineAction(event) {
+      const button = event.target.closest('button[data-mode]');
+      if (!button) {
+        return;
+      }
+
+      try {
+        await enroll(button.dataset.mode, button.dataset.id);
+      } catch (error) {
+        setStatus(error.message);
+      }
+    }
+
+    async function handleEnrollmentRemoval(event) {
+      const button = event.target.closest('button[data-action="remove-enrollment"]');
+      if (!button) {
+        return;
+      }
+
+      try {
+        await removeEnrollment(button.dataset.mode, button.dataset.id);
+      } catch (error) {
+        setStatus(error.message);
+      }
+    }
+
+    vulnerableDisciplinesNode.addEventListener('click', handleDisciplineAction);
+    secureDisciplinesNode.addEventListener('click', handleDisciplineAction);
+    vulnerableNode.addEventListener('click', handleEnrollmentRemoval);
+    secureNode.addEventListener('click', handleEnrollmentRemoval);
+
+    loadDisciplines().catch((error) => setStatus(error.message));
+    loadEnrollments('vulnerable');
+    loadEnrollments('secure');
+  </script>
+</body>
+</html>

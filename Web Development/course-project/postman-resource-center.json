@@ -1,0 +1,218 @@
+{
+  "info": {
+    "name": "Resource Center API (REST + GraphQL)",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "REST",
+      "item": [
+        {
+          "name": "Auth Register",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/api/rest/auth/register", "host": ["{{baseUrl}}"], "path": ["api", "rest", "auth", "register"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"firstName\": \"Alice\",\n  \"lastName\": \"Ranger\",\n  \"email\": \"alice@example.com\",\n  \"password\": \"secret123\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Auth Login",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/api/rest/auth/login", "host": ["{{baseUrl}}"], "path": ["api", "rest", "auth", "login"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{dmEmail}}\",\n  \"password\": \"{{dmPassword}}\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Auth Me",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/api/rest/auth/me", "host": ["{{baseUrl}}"], "path": ["api", "rest", "auth", "me"] }
+          }
+        },
+        {
+          "name": "Auth Logout",
+          "request": {
+            "method": "POST",
+            "url": { "raw": "{{baseUrl}}/api/rest/auth/logout", "host": ["{{baseUrl}}"], "path": ["api", "rest", "auth", "logout"] }
+          }
+        },
+        {
+          "name": "List Characters",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/api/rest/characters", "host": ["{{baseUrl}}"], "path": ["api", "rest", "characters"] }
+          }
+        },
+        {
+          "name": "List Characters (q + isActive)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/rest/characters?q=elf&isActive=true",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "rest", "characters"],
+              "query": [
+                { "key": "q", "value": "elf" },
+                { "key": "isActive", "value": "true" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Character By ID",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/api/rest/characters/{{characterId}}", "host": ["{{baseUrl}}"], "path": ["api", "rest", "characters", "{{characterId}}"] }
+          }
+        },
+        {
+          "name": "Create Character",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/api/rest/characters", "host": ["{{baseUrl}}"], "path": ["api", "rest", "characters"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Postman Ranger\",\n  \"className\": \"Ranger\",\n  \"race\": \"Human\",\n  \"level\": 3,\n  \"alignment\": \"Neutral Good\",\n  \"str\": 12,\n  \"dex\": 16,\n  \"con\": 13,\n  \"int\": 11,\n  \"wis\": 14,\n  \"cha\": 10,\n  \"ac\": 15,\n  \"ms\": 30,\n  \"hp\": 28,\n  \"isActive\": true\n}"
+            }
+          }
+        },
+        {
+          "name": "Update Character",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/api/rest/characters/{{characterId}}", "host": ["{{baseUrl}}"], "path": ["api", "rest", "characters", "{{characterId}}"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Postman Ranger Updated\",\n  \"className\": \"Ranger\",\n  \"race\": \"Human\",\n  \"level\": 4,\n  \"alignment\": \"Neutral Good\",\n  \"str\": 13,\n  \"dex\": 16,\n  \"con\": 13,\n  \"int\": 11,\n  \"wis\": 14,\n  \"cha\": 10,\n  \"ac\": 16,\n  \"ms\": 30,\n  \"hp\": 34,\n  \"isActive\": true\n}"
+            }
+          }
+        },
+        {
+          "name": "Toggle Active",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/api/rest/characters/{{characterId}}/activation", "host": ["{{baseUrl}}"], "path": ["api", "rest", "characters", "{{characterId}}", "activation"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"isActive\": false\n}"
+            }
+          }
+        },
+        {
+          "name": "Delete Character",
+          "request": {
+            "method": "DELETE",
+            "url": { "raw": "{{baseUrl}}/api/rest/characters/{{characterId}}", "host": ["{{baseUrl}}"], "path": ["api", "rest", "characters", "{{characterId}}"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "GraphQL",
+      "item": [
+        {
+          "name": "Me",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/api/graphql", "host": ["{{baseUrl}}"], "path": ["api", "graphql"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"query\": \"query { me { id email firstName lastName role isVerified } }\"\n}"
+            }
+          }
+        },
+        {
+          "name": "List Characters",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/api/graphql", "host": ["{{baseUrl}}"], "path": ["api", "graphql"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"query\": \"query Characters($q: String, $isActive: Boolean) { characters(q: $q, isActive: $isActive) { id name className race level ownerId ownerName isActive } }\",\n  \"variables\": {\n    \"q\": \"\",\n    \"isActive\": null\n  }\n}"
+            }
+          }
+        },
+        {
+          "name": "Get Character By ID",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/api/graphql", "host": ["{{baseUrl}}"], "path": ["api", "graphql"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"query\": \"query Character($id: ID!) { character(id: $id) { id name className race level alignment str dex con int wis cha ac ms hp ownerId ownerName isActive } }\",\n  \"variables\": {\n    \"id\": \"{{characterId}}\"\n  }\n}"
+            }
+          }
+        },
+        {
+          "name": "Create Character",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/api/graphql", "host": ["{{baseUrl}}"], "path": ["api", "graphql"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"query\": \"mutation CreateCharacter($name: String!, $className: String!, $race: String!, $level: Int!, $alignment: String, $str: Int!, $dex: Int!, $con: Int!, $int: Int!, $wis: Int!, $cha: Int!, $ac: Int!, $ms: Int!, $hp: Int!, $isActive: Boolean) { createCharacter(name: $name, className: $className, race: $race, level: $level, alignment: $alignment, str: $str, dex: $dex, con: $con, int: $int, wis: $wis, cha: $cha, ac: $ac, ms: $ms, hp: $hp, isActive: $isActive) { id name isActive } }\",\n  \"variables\": {\n    \"name\": \"GraphQL Sorcerer\",\n    \"className\": \"Sorcerer\",\n    \"race\": \"Elf\",\n    \"level\": 5,\n    \"alignment\": \"Chaotic Good\",\n    \"str\": 8,\n    \"dex\": 14,\n    \"con\": 12,\n    \"int\": 13,\n    \"wis\": 11,\n    \"cha\": 18,\n    \"ac\": 13,\n    \"ms\": 30,\n    \"hp\": 29,\n    \"isActive\": true\n  }\n}"
+            }
+          }
+        },
+        {
+          "name": "Update Character",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/api/graphql", "host": ["{{baseUrl}}"], "path": ["api", "graphql"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"query\": \"mutation UpdateCharacter($id: ID!, $name: String!, $className: String!, $race: String!, $level: Int!, $alignment: String, $str: Int!, $dex: Int!, $con: Int!, $int: Int!, $wis: Int!, $cha: Int!, $ac: Int!, $ms: Int!, $hp: Int!, $isActive: Boolean) { updateCharacter(id: $id, name: $name, className: $className, race: $race, level: $level, alignment: $alignment, str: $str, dex: $dex, con: $con, int: $int, wis: $wis, cha: $cha, ac: $ac, ms: $ms, hp: $hp, isActive: $isActive) { id name level hp isActive } }\",\n  \"variables\": {\n    \"id\": \"{{characterId}}\",\n    \"name\": \"GraphQL Sorcerer Updated\",\n    \"className\": \"Sorcerer\",\n    \"race\": \"Elf\",\n    \"level\": 6,\n    \"alignment\": \"Chaotic Good\",\n    \"str\": 8,\n    \"dex\": 14,\n    \"con\": 12,\n    \"int\": 13,\n    \"wis\": 11,\n    \"cha\": 18,\n    \"ac\": 13,\n    \"ms\": 30,\n    \"hp\": 35,\n    \"isActive\": true\n  }\n}"
+            }
+          }
+        },
+        {
+          "name": "Toggle Active",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/api/graphql", "host": ["{{baseUrl}}"], "path": ["api", "graphql"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"query\": \"mutation ToggleCharacter($id: ID!, $isActive: Boolean!) { toggleCharacterActive(id: $id, isActive: $isActive) { id isActive } }\",\n  \"variables\": {\n    \"id\": \"{{characterId}}\",\n    \"isActive\": false\n  }\n}"
+            }
+          }
+        },
+        {
+          "name": "Delete Character",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/api/graphql", "host": ["{{baseUrl}}"], "path": ["api", "graphql"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"query\": \"mutation DeleteCharacter($id: ID!) { deleteCharacter(id: $id) }\",\n  \"variables\": {\n    \"id\": \"{{characterId}}\"\n  }\n}"
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:4000" },
+    { "key": "dmEmail", "value": "dm@resource-center.local" },
+    { "key": "dmPassword", "value": "dm12345" },
+    { "key": "characterId", "value": "4" }
+  ]
+}

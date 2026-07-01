@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		5736F7802F44B87B006D08DB /* RxBlocking in Frameworks */ = {isa = PBXBuildFile; productRef = 5736F77F2F44B87B006D08DB /* RxBlocking */; };
 		5736F7822F44B87F006D08DB /* RxTest in Frameworks */ = {isa = PBXBuildFile; productRef = 5736F7812F44B87F006D08DB /* RxTest */; };
+		578643F92F6893B2004D4310 /* RxCombine in Frameworks */ = {isa = PBXBuildFile; productRef = 578643F82F6893B2004D4310 /* RxCombine */; };
 		57AC40302F3B96C600F3EB6E /* RxCocoa in Frameworks */ = {isa = PBXBuildFile; productRef = 57AC402F2F3B96C600F3EB6E /* RxCocoa */; };
 		57AC40322F3B96C600F3EB6E /* RxRelay in Frameworks */ = {isa = PBXBuildFile; productRef = 57AC40312F3B96C600F3EB6E /* RxRelay */; };
 		57AC40342F3B96C600F3EB6E /* RxSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 57AC40332F3B96C600F3EB6E /* RxSwift */; };
@@ -69,6 +70,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				578643F92F6893B2004D4310 /* RxCombine in Frameworks */,
 				57AC40342F3B96C600F3EB6E /* RxSwift in Frameworks */,
 				57AC40322F3B96C600F3EB6E /* RxRelay in Frameworks */,
 				57AC40302F3B96C600F3EB6E /* RxCocoa in Frameworks */,
@@ -152,6 +154,7 @@
 				57AC402F2F3B96C600F3EB6E /* RxCocoa */,
 				57AC40312F3B96C600F3EB6E /* RxRelay */,
 				57AC40332F3B96C600F3EB6E /* RxSwift */,
+				578643F82F6893B2004D4310 /* RxCombine */,
 			);
 			productName = "reactive-weather";
 			productReference = 57AC40132F3B967000F3EB6E /* reactive-weather.app */;
@@ -187,6 +190,7 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				57AC402E2F3B96C600F3EB6E /* XCRemoteSwiftPackageReference "RxSwift" */,
+				578643F72F6893B2004D4310 /* XCRemoteSwiftPackageReference "RxCombine" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 57AC40142F3B967000F3EB6E /* Products */;
@@ -502,6 +506,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		578643F72F6893B2004D4310 /* XCRemoteSwiftPackageReference "RxCombine" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/CombineCommunity/RxCombine";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.0.1;
+			};
+		};
 		57AC402E2F3B96C600F3EB6E /* XCRemoteSwiftPackageReference "RxSwift" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/ReactiveX/RxSwift.git";
@@ -522,6 +534,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 57AC402E2F3B96C600F3EB6E /* XCRemoteSwiftPackageReference "RxSwift" */;
 			productName = RxTest;
+		};
+		578643F82F6893B2004D4310 /* RxCombine */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 578643F72F6893B2004D4310 /* XCRemoteSwiftPackageReference "RxCombine" */;
+			productName = RxCombine;
 		};
 		57AC402F2F3B96C600F3EB6E /* RxCocoa */ = {
 			isa = XCSwiftPackageProductDependency;

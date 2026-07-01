@@ -1,0 +1,16 @@
+{
+  "name": "idor-discipline-demo",
+  "version": "1.0.0",
+  "description": "Small educational demo of vulnerable and protected IDOR flows for discipline enrollment",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "mongodb-memory-server": "^10.1.4",
+    "mongoose": "^8.10.1"
+  }
+}
